@@ -1,36 +1,54 @@
 package com.matheustorres.eadhub.authuser.dtos;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.matheustorres.eadhub.authuser.validation.UsernameConstraint;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record UserDTO(
-        @JsonView(UserView.RegistrationPost.class)
-        String username,
 
-        @JsonView(UserView.RegistrationPost.class)
-        String email,
+    @NotBlank(groups = UserView.RegistrationPost.class)
+    @Size(min = 4, max = 50, groups = UserView.RegistrationPost.class)
+    @UsernameConstraint(groups = UserView.RegistrationPost.class) 
+    @JsonView(UserView.RegistrationPost.class) String username,
 
-        @JsonView({UserView.RegistrationPost.class, UserView.PasswordPut.class})
-        String password,
+    @NotBlank(groups = UserView.RegistrationPost.class) 
+    @Email(groups = UserView.RegistrationPost.class) 
+    @JsonView(UserView.RegistrationPost.class) String email,
 
-        @JsonView(UserView.PasswordPut.class)
-        String oldPassword,
+    @NotBlank(groups = {
+    UserView.RegistrationPost.class, UserView.PasswordPut.class }) 
+    @Size(min = 6, max = 20, groups = {
+    UserView.PasswordPut.class, UserView.RegistrationPost.class }) 
+    @JsonView({
+    UserView.RegistrationPost.class, UserView.PasswordPut.class }) String password,
 
-        @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
-        String fullName,
+    @NotBlank(groups = UserView.PasswordPut.class) 
+    @Size(min = 6, max = 20, groups = UserView.PasswordPut.class) 
+    @JsonView(UserView.PasswordPut.class) String oldPassword,
 
-        @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
-        String phoneNumber,
+        @JsonView({ UserView.RegistrationPost.class, UserView.UserPut.class }) String fullName,
 
-        @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
-        String cpf,
+        @JsonView({ UserView.RegistrationPost.class, UserView.UserPut.class }) String phoneNumber,
 
-        @JsonView({UserView.RegistrationPost.class, UserView.ImagePut.class})
-        String imageUrl) {
+        @JsonView({ UserView.RegistrationPost.class, UserView.UserPut.class }) String cpf,
+
+        @NotBlank(groups = UserView.ImagePut.class) @JsonView({ UserView.RegistrationPost.class,
+                UserView.ImagePut.class }) String imageUrl) {
 
     public interface UserView {
-        public static interface RegistrationPost {}
-        public static interface UserPut {}
-        public static interface PasswordPut {}
-        public static interface ImagePut {}
+        public static interface RegistrationPost {
+        }
+
+        public static interface UserPut {
+        }
+
+        public static interface PasswordPut {
+        }
+
+        public static interface ImagePut {
+        }
     }
 }
