@@ -17,11 +17,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = "tb_user")
@@ -68,4 +72,21 @@ public class User {
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime lastUpdateDate;
+
+    public void updateInfo(String fullName, String phoneNumber, String cpf) {
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
+        this.cpf = cpf;
+        this.lastUpdateDate = LocalDateTime.now(java.time.ZoneId.of("UTC"));
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+        this.lastUpdateDate = LocalDateTime.now(java.time.ZoneId.of("UTC"));
+    }
+
+    public void updateImage(String imageUrl) {
+        this.imageUrl = imageUrl;
+        this.lastUpdateDate = LocalDateTime.now(java.time.ZoneId.of("UTC"));
+    }
 }

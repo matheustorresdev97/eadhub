@@ -1,7 +1,21 @@
 package com.matheustorres.eadhub.authuser.services.impl;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.matheustorres.eadhub.authuser.domain.enums.UserStatus;
+import com.matheustorres.eadhub.authuser.domain.enums.UserType;
+import com.matheustorres.eadhub.authuser.domain.models.User;
+import com.matheustorres.eadhub.authuser.dtos.UserDTO;
+import com.matheustorres.eadhub.authuser.mappers.UserMapper;
 import com.matheustorres.eadhub.authuser.repositories.UserRepository;
 import com.matheustorres.eadhub.authuser.services.UserService;
 
@@ -12,5 +26,78 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public Optional<User> findById(UUID userId) {
+        return userRepository.findById(userId);
+    }
+
+    @Override
+    public void delete(User user) {
+        userRepository.delete(user);
+    }
+
+    @Override
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User registerUser(UserDTO userDto) {
+        if (existsByUsername(userDto.username())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Error: Username is already taken!");
+        }
+        if (existsByEmail(userDto.email())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Error: Email is already taken!");
+        }
+
+        User user = userMapper.toEntityBuilder(userDto)
+            .userStatus(UserStatus.ACTIVE)
+            .userType(UserType.STUDENT)
+            .creationDate(LocalDateTime.now(ZoneId.of("UTC")))
+            .lastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")))
+            .build();
+        
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User updateUser(UUID userId, UserDTO userDto) {
+        User user = findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+        user.updateInfo(userDto.fullName(), userDto.phoneNumber(), userDto.cpf());
+        return userRepository.save(user);
+    }
+
+    @Override
+    public void updatePassword(UUID userId, UserDTO userDto) {
+        User user = findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+        if (!user.getPassword().equals(userDto.oldPassword())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Error: Mismatched old password!");
+        }
+        user.updatePassword(userDto.password());
+        userRepository.save(user);
+    }
+
+    @Override
+    public User updateImage(UUID userId, UserDTO userDto) {
+        User user = findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+        user.updateImage(userDto.imageUrl());
+        return userRepository.save(user);
+    }
 }

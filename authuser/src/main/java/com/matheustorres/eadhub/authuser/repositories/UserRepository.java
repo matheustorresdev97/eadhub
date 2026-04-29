@@ -7,4 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.matheustorres.eadhub.authuser.domain.models.User;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
+
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
 }
