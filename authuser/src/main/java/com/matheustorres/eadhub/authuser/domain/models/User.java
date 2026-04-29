@@ -3,6 +3,8 @@ package com.matheustorres.eadhub.authuser.domain.models;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -29,7 +31,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = "tb_user")
-public class User {
+public class User extends RepresentationModel<User> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

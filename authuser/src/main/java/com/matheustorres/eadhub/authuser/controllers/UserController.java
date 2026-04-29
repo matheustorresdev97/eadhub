@@ -3,6 +3,9 @@ package com.matheustorres.eadhub.authuser.controllers;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -36,9 +39,15 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-public ResponseEntity<Page<UserDTO>> getAllUsers(SpecificationTemplate.UserSpec spec,
-                                                       @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable){
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findAll(spec, pageable));
+    public ResponseEntity<Page<User>> getAllUsers(SpecificationTemplate.UserSpec spec,
+                                                  @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<User> userModelPage = userService.findAll(spec, pageable);
+        if (!userModelPage.isEmpty()) {
+            for (User user : userModelPage.toList()) {
+                user.add(linkTo(methodOn(UserController.class).getUserById(user.getUserId())).withSelfRel());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(userModelPage);
     }
 
     @GetMapping("/{userId}")

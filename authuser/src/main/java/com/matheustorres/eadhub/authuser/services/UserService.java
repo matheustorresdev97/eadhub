@@ -12,7 +12,7 @@ import com.matheustorres.eadhub.authuser.dtos.UserDTO;
 
 public interface UserService {
 
-    Page<UserDTO> findAll(Specification<User> spec, Pageable pageable);
+    Page<User> findAll(Specification<User> spec, Pageable pageable);
 
     Optional<User> findById(UUID userId);
 

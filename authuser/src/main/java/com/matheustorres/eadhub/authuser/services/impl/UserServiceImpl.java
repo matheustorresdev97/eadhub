@@ -33,18 +33,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public Page<UserDTO> findAll(Specification<User> spec, Pageable pageable) {
-        Page<User> users = userRepository.findAll(spec, pageable);
-        return users.map(user -> new UserDTO(
-            user.getUsername(),
-            user.getEmail(),
-            null,
-            null,
-            user.getFullName(),
-            user.getPhoneNumber(),
-            user.getCpf(),
-            user.getImageUrl()
-        ));
+    public Page<User> findAll(Specification<User> spec, Pageable pageable) {
+        return userRepository.findAll(spec, pageable);
     }
 
     @Override
