@@ -1,3 +1,19 @@
+server:
+  port: 8087
+  
 spring:
   application:
     name: authuser
+  datasource:
+    url: jdbc:postgresql://eadhub-authuser:5432/eadhub-authuser
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true

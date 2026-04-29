@@ -1,0 +1,15 @@
+services:
+  eadhub-authuser:
+    image: postgres:15
+    container_name: eadhub-authuser
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=eadhub-authuser
+    ports:
+      - "5432:5432"
+    volumes:
+      - eadhub-authuser-data:/var/lib/postgresql/data
+
+volumes:
+  eadhub-authuser-data:
