@@ -1,15 +1,18 @@
 package com.matheustorres.eadhub.authuser.services;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import com.matheustorres.eadhub.authuser.domain.models.User;
 import com.matheustorres.eadhub.authuser.dtos.UserDTO;
 
 public interface UserService {
 
-    List<User> findAll();
+    Page<UserDTO> findAll(Specification<User> spec, Pageable pageable);
 
     Optional<User> findById(UUID userId);
 

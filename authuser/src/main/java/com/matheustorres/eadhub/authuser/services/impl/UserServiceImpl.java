@@ -7,6 +7,8 @@ import java.util.UUID;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,6 +23,8 @@ import com.matheustorres.eadhub.authuser.services.UserService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.jpa.domain.Specification;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -29,8 +33,18 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public Page<UserDTO> findAll(Specification<User> spec, Pageable pageable) {
+        Page<User> users = userRepository.findAll(spec, pageable);
+        return users.map(user -> new UserDTO(
+            user.getUsername(),
+            user.getEmail(),
+            null,
+            null,
+            user.getFullName(),
+            user.getPhoneNumber(),
+            user.getCpf(),
+            user.getImageUrl()
+        ));
     }
 
     @Override
