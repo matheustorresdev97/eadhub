@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ import com.matheustorres.eadhub.course.domain.models.Course;
 import com.matheustorres.eadhub.course.dtos.CourseDTO;
 import com.matheustorres.eadhub.course.services.CourseService;
 import com.matheustorres.eadhub.course.specifications.SpecificationTemplate;
+import com.matheustorres.eadhub.course.validation.CourseValidator;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,10 +40,15 @@ import lombok.RequiredArgsConstructor;
 public class CourseController {
 
     private final CourseService courseService;
+    private final CourseValidator courseValidator;
 
     @PostMapping
-    public ResponseEntity<Object> saveCourse(@RequestBody @Valid CourseDTO courseDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.save(courseDto));
+    public ResponseEntity<Object> saveCourse(@RequestBody @Valid CourseDTO courseDTO, Errors errors) {
+        courseValidator.validate(courseDTO, errors);
+        if (errors.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.save(courseDTO));
     }
 
     @DeleteMapping("/{courseId}")
@@ -56,7 +63,7 @@ public class CourseController {
 
     @PutMapping("/{courseId}")
     public ResponseEntity<Object> updateCourse(@PathVariable(value = "courseId") UUID courseId,
-                                              @RequestBody @Valid CourseDTO courseDto) {
+            @RequestBody @Valid CourseDTO courseDto) {
         Optional<Course> courseOptional = courseService.findById(courseId);
         if (courseOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
@@ -66,8 +73,8 @@ public class CourseController {
 
     @GetMapping
     public ResponseEntity<Page<Course>> getAllCourses(SpecificationTemplate.CourseSpec spec,
-                                                     @PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
-                                                     @RequestParam(required = false) UUID userId) {
+            @PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(required = false) UUID userId) {
         Page<Course> coursePage = null;
         if (userId != null) {
             coursePage = courseService.findAll(SpecificationTemplate.courseUserId(userId).and(spec), pageable);
