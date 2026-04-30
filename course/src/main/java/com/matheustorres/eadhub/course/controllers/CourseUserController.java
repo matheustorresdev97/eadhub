@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpStatusCodeException;
+import feign.FeignException;
 
 import com.matheustorres.eadhub.course.clients.AuthUserClient;
 import com.matheustorres.eadhub.course.domain.enums.UserStatus;
@@ -49,7 +49,6 @@ public class CourseUserController {
         log.info("GET request GET /courses/{}/users", courseId);
         return ResponseEntity.status(HttpStatus.OK).body(authUserClient.getAllUsersByCourse(courseId, pageable));
     }
-
     @PostMapping("/{courseId}/users/subscription")
     public ResponseEntity<Object> saveSubscriptionUserInCourse(@PathVariable(value = "courseId") UUID courseId,
             @RequestBody @Valid SubscriptionDTO subscriptionDTO) {
@@ -67,14 +66,13 @@ public class CourseUserController {
             if (responseUser.userStatus().equals(UserStatus.BLOCKED)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("User is blocked");
             }
-        } catch (HttpStatusCodeException e) {
-            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-            }
+        } catch (FeignException.NotFound e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
         CourseUser courseUser = courseUserService
-                .save(courseOptional.get().convertToCourseUserModel(subscriptionDTO.userId()));
+                .saveAndSendSubscriptionUserInCourse(
+                        courseOptional.get().convertToCourseUserModel(subscriptionDTO.userId()));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(courseUser);
     }
