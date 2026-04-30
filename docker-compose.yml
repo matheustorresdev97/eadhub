@@ -1,15 +1,15 @@
 services:
-  eadhub-authuser:
+  eadhub-db:
     image: postgres:15
-    container_name: eadhub-authuser
+    container_name: eadhub-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=eadhub-authuser
     ports:
       - "5432:5432"
     volumes:
-      - eadhub-authuser-data:/var/lib/postgresql/data
+      - eadhub-db-data:/var/lib/postgresql/data
+      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
-  eadhub-authuser-data:
+  eadhub-db-data:
