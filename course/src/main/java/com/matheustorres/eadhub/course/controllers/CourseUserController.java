@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import com.matheustorres.eadhub.course.clients.AuthUserClient;
+import com.matheustorres.eadhub.course.domain.enums.UserStatus;
 import com.matheustorres.eadhub.course.domain.models.Course;
 import com.matheustorres.eadhub.course.domain.models.CourseUser;
 import com.matheustorres.eadhub.course.dtos.ResponsePageDto;
@@ -59,11 +61,21 @@ public class CourseUserController {
         if (courseUserService.existsByCourseAndUserId(courseOptional.get().getCourseId(), subscriptionDTO.userId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: subscription already exists!");
         }
-        // verificação user
+        UserDTO responseUser;
+        try {
+            responseUser = authUserClient.getUserById(subscriptionDTO.userId());
+            if (responseUser.userStatus().equals(UserStatus.BLOCKED)) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("User is blocked");
+            }
+        } catch (HttpStatusCodeException e) {
+            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
+        }
 
-        CourseUser courseUserModel = courseUserService
+        CourseUser courseUser = courseUserService
                 .save(courseOptional.get().convertToCourseUserModel(subscriptionDTO.userId()));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Subscription created successfully.");
+        return ResponseEntity.status(HttpStatus.CREATED).body(courseUser);
     }
 }
