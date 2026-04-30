@@ -6,6 +6,8 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,7 +29,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "tb_lessons")
-public class Lesson {
+public class Lesson extends RepresentationModel<Lesson> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID lessonId;
@@ -48,4 +50,10 @@ public class Lesson {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Module module;
+
+    public void updateLesson(String title, String description, String videoUrl) {
+        this.title = title;
+        this.description = description;
+        this.videoUrl = videoUrl;
+    }
 }

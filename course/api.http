@@ -1,5 +1,7 @@
 @baseUrl = http://localhost:8082
 @courseId = 00000000-0000-0000-0000-000000000000
+@moduleId = 00000000-0000-0000-0000-000000000000
+@lessonId = 00000000-0000-0000-0000-000000000000
 
 ### ---------------- COURSE CONTROLLER ----------------
 
@@ -39,3 +41,69 @@ Content-Type: application/json
 
 ### Deletar curso
 DELETE {{baseUrl}}/courses/{{courseId}}
+
+
+### ---------------- MODULE CONTROLLER ----------------
+
+### Criar um novo módulo
+POST {{baseUrl}}/courses/{{courseId}}/modules
+Content-Type: application/json
+
+{
+  "title": "Introdução a Microsserviços",
+  "description": "Conceitos fundamentais e arquitetura"
+}
+
+### Listar todos os módulos de um curso
+GET {{baseUrl}}/courses/{{courseId}}/modules?page=0&size=10&sort=moduleId,asc
+Accept: application/json
+
+### Buscar módulo por ID no curso
+GET {{baseUrl}}/courses/{{courseId}}/modules/{{moduleId}}
+Accept: application/json
+
+### Atualizar módulo
+PUT {{baseUrl}}/courses/{{courseId}}/modules/{{moduleId}}
+Content-Type: application/json
+
+{
+  "title": "Introdução a Microsserviços (Atualizado)",
+  "description": "Conceitos fundamentais, arquitetura e padrões"
+}
+
+### Deletar módulo
+DELETE {{baseUrl}}/courses/{{courseId}}/modules/{{moduleId}}
+
+
+### ---------------- LESSON CONTROLLER ----------------
+
+### Criar uma nova lição
+POST {{baseUrl}}/modules/{{moduleId}}/lessons
+Content-Type: application/json
+
+{
+  "name": "O que são Microsserviços?",
+  "description": "Nesta aula vamos aprender a definição e benefícios",
+  "videoUrl": "https://youtube.com/lesson1"
+}
+
+### Listar todas as lições de um módulo
+GET {{baseUrl}}/modules/{{moduleId}}/lessons?page=0&size=10&sort=lessonId,asc
+Accept: application/json
+
+### Buscar lição por ID no módulo
+GET {{baseUrl}}/modules/{{moduleId}}/lessons/{{lessonId}}
+Accept: application/json
+
+### Atualizar lição
+PUT {{baseUrl}}/modules/{{moduleId}}/lessons/{{lessonId}}
+Content-Type: application/json
+
+{
+  "name": "O que são Microsserviços? (Aula Revisada)",
+  "description": "Definição, benefícios e quando não usar",
+  "videoUrl": "https://youtube.com/lesson1-revised"
+}
+
+### Deletar lição
+DELETE {{baseUrl}}/modules/{{moduleId}}/lessons/{{lessonId}}
