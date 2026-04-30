@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.matheustorres.eadhub.course.clients.AuthUserClient;
 import com.matheustorres.eadhub.course.domain.models.Course;
 import com.matheustorres.eadhub.course.domain.models.CourseUser;
 import com.matheustorres.eadhub.course.domain.models.Lesson;
@@ -36,11 +37,18 @@ public class CourseServiceImpl implements CourseService {
     private final ModuleRepository moduleRepository;
     private final LessonRepository lessonRepository;
     private final CourseUserRepository courseUserRepository;
+    private final AuthUserClient authUserClient;
     private final CourseMapper courseMapper;
+
+    @Override
+    public boolean existsByCourseId(UUID courseId) {
+        return courseRepository.existsById(courseId);
+    }
 
     @Override
     @Transactional
     public void delete(Course course) {
+        boolean deleteCourseInAuthUser = false;
         List<Module> moduleList = moduleRepository.findAllModulesIntoCourse(course.getCourseId());
         if (!moduleList.isEmpty()) {
             for (Module module : moduleList) {
@@ -54,8 +62,12 @@ public class CourseServiceImpl implements CourseService {
         List<CourseUser> courseUserList = courseUserRepository.findAllCourseUserIntoCourse(course.getCourseId());
         if (!courseUserList.isEmpty()) {
             courseUserRepository.deleteAll(courseUserList);
+            deleteCourseInAuthUser = true;
         }
         courseRepository.delete(course);
+        if (deleteCourseInAuthUser) {
+            authUserClient.deleteCourseInAuthUser(course.getCourseId());
+        }
     }
 
     @Override

@@ -11,9 +11,15 @@ import com.matheustorres.eadhub.course.domain.models.Course;
 import com.matheustorres.eadhub.course.dtos.CourseDTO;
 
 public interface CourseService {
+    boolean existsByCourseId(UUID courseId);
+
     void delete(Course course);
+
     Page<Course> findAll(Specification<Course> spec, Pageable pageable);
+
     Optional<Course> findById(UUID courseId);
+
     Course save(CourseDTO courseDto);
+
     Course update(UUID courseId, CourseDTO courseDto);
 }

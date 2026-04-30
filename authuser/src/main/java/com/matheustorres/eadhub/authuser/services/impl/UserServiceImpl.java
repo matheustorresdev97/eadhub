@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.matheustorres.eadhub.authuser.clients.CourseClient;
 import com.matheustorres.eadhub.authuser.domain.enums.UserStatus;
 import com.matheustorres.eadhub.authuser.domain.enums.UserType;
 import com.matheustorres.eadhub.authuser.domain.models.User;
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserCourseRepository userCourseRepository;
+    private final CourseClient courseClient;
     private final UserMapper userMapper;
 
     @Override
@@ -53,11 +55,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(User user) {
         log.info("UserServiceImpl::delete - Deletando usuário userId {}", user.getUserId());
+        boolean deleteUserCourseInCourse = false;
         List<UserCourse> userCourseList = userCourseRepository.findAllUserCourseIntoUser(user.getUserId());
         if (!userCourseList.isEmpty()) {
             userCourseRepository.deleteAll(userCourseList);
+            deleteUserCourseInCourse = true;
         }
         userRepository.delete(user);
+        if (deleteUserCourseInCourse) {
+            courseClient.deleteUserInCourse(user.getUserId());
+        }
     }
 
     @Override

@@ -111,10 +111,28 @@ DELETE {{baseUrl}}/users/{{userId}}
 GET {{baseUrl}}/users/{{userId}}/courses?page=0&size=10&sort=courseId,asc
 Accept: application/json
 
-### 4.2 Inscrever usuário em um curso (salva localmente)
+### 4.2 Inscrever usuário em um curso (via AuthUser Service)
 POST {{baseUrl}}/users/{{userId}}/courses/subscription
 Content-Type: application/json
 
 {
   "courseId": "{{courseId}}"
 }
+
+
+### ================================================================
+###              5. COURSE-USER CONTROLLER (OpenFeign)
+### ================================================================
+
+### 5.1 Listar usuários de um curso (via Feign -> AuthUser Service)
+GET {{baseUrl}}/courses/{{courseId}}/users?page=0&size=10&sort=userId,asc
+Accept: application/json
+
+### 5.2 Inscrever usuário em um curso (via Course Service -> AuthUser)
+POST {{baseUrl}}/courses/{{courseId}}/users/subscription
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}"
+}
+

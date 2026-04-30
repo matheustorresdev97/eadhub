@@ -3,6 +3,7 @@ package com.matheustorres.eadhub.authuser.services.impl;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.matheustorres.eadhub.authuser.domain.models.User;
 import com.matheustorres.eadhub.authuser.domain.models.UserCourse;
@@ -25,5 +26,16 @@ public class UserCourseServiceImpl implements UserCourseService {
     @Override
     public UserCourse save(UserCourse userCourse) {
         return userCourseRepository.save(userCourse);
+    }
+
+    @Override
+    public boolean existsByCourseId(UUID courseId) {
+        return userCourseRepository.existsByCourseId(courseId);
+    }
+
+    @Transactional
+    @Override
+    public void deleteUserCourseByCourse(UUID courseId) {
+        userCourseRepository.deleteAllByCourseId(courseId);
     }
 }
