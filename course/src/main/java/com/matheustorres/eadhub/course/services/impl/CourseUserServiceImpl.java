@@ -23,7 +23,7 @@ public class CourseUserServiceImpl implements CourseUserService {
 
     @Override
     public boolean existsByCourseAndUserId(UUID courseId, UUID userId) {
-        return courseUserRepository.existsByCourseAndUserId(courseId, userId);
+        return courseUserRepository.existsByCourseCourseIdAndUserId(courseId, userId);
     }
 
     @Override

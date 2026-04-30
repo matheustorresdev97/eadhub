@@ -1,5 +1,5 @@
-@baseUrl = http://localhost:8087
-@userId = 0b89ae4c-1848-4ca5-abf8-b7e37cb4e8a3
+@baseUrl = http://localhost:8080
+@userId = 7a26f2f7-2d21-4c56-954f-56449b8998e0
 @courseId = 6680832f-e10b-42f7-821c-503fbc89f00b
 
 ### ================================================================
@@ -11,12 +11,12 @@ POST {{baseUrl}}/auth/signup
 Content-Type: application/json
 
 {
-  "username": "matheus123",
-  "email": "matheus@email.com",
-  "password": "password123",
+  "username": "matheus79",
+  "email": "matheus79@email.com",
+  "password": "password79",
   "fullName": "Matheus Torres",
   "phoneNumber": "11999999999",
-  "cpf": "12345678901",
+  "cpf": "12345678903",
   "imageUrl": "http://image.com/matheus.png"
 }
 

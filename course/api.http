@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:8082
+@baseUrl = http://localhost:8080
 @userId = 0b89ae4c-1848-4ca5-abf8-b7e37cb4e8a3
 @courseId = 6680832f-e10b-42f7-821c-503fbc89f00b
 @moduleId = 98ff54af-f329-4662-be28-0123f5bb704e

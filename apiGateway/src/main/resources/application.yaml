@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: eadhub-api-gateway
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: eadhub-authuser
+              uri: lb://eadhub-authuser
+              predicates:
+                - Path=/auth/**, /users/**, /instructors/**
+
+            - id: eadhub-course
+              uri: lb://eadhub-course
+              predicates:
+                - Path=/courses/**, /modules/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
