@@ -1,6 +1,7 @@
 package com.matheustorres.eadhub.authuser.domain.models;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.hateoas.RepresentationModel;
@@ -8,6 +9,7 @@ import org.springframework.hateoas.RepresentationModel;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.matheustorres.eadhub.authuser.domain.enums.UserStatus;
 import com.matheustorres.eadhub.authuser.domain.enums.UserType;
 
@@ -15,9 +17,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -74,6 +78,10 @@ public class User extends RepresentationModel<User> {
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime lastUpdateDate;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<UserCourse> usersCourses;
 
     public void updateInfo(String fullName, String phoneNumber, String cpf) {
         this.fullName = fullName;

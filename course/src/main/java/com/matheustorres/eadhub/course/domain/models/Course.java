@@ -75,6 +75,10 @@ public class Course extends RepresentationModel<Course> {
     @Fetch(FetchMode.SUBSELECT)
     private Set<Module> modules;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    private Set<CourseUser> courseUsers;
+
     public void updateCourse(String name, String description, String imageUrl, CourseStatus courseStatus,
             CourseLevel courseLevel) {
         this.name = name;
