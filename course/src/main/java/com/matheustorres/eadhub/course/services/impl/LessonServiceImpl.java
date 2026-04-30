@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.matheustorres.eadhub.course.domain.models.Lesson;
@@ -37,8 +38,8 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public Page<Lesson> findAllByModule(UUID moduleId, Pageable pageable) {
-        return lessonRepository.findAllLessonsIntoModule(moduleId, pageable);
+    public Page<Lesson> findAllByModule(Specification<Lesson> spec, Pageable pageable) {
+        return lessonRepository.findAll(spec, pageable);
     }
 
     @Override

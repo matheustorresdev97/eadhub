@@ -22,6 +22,14 @@ Content-Type: application/json
 GET {{baseUrl}}/courses?page=0&size=5&sort=courseId,asc
 Accept: application/json
 
+### Listar cursos com filtros (Exemplo: Level e Status)
+GET {{baseUrl}}/courses?courseLevel=ADVANCED&courseStatus=CONCLUDED
+Accept: application/json
+
+### Listar cursos com filtro de nome (Like)
+GET {{baseUrl}}/courses?name=Spring
+Accept: application/json
+
 ### Buscar curso por ID
 GET {{baseUrl}}/courses/{{courseId}}
 Accept: application/json
@@ -58,6 +66,10 @@ Content-Type: application/json
 GET {{baseUrl}}/courses/{{courseId}}/modules?page=0&size=10&sort=moduleId,asc
 Accept: application/json
 
+### Listar módulos de um curso com filtro de título
+GET {{baseUrl}}/courses/{{courseId}}/modules?title=Introdução
+Accept: application/json
+
 ### Buscar módulo por ID no curso
 GET {{baseUrl}}/courses/{{courseId}}/modules/{{moduleId}}
 Accept: application/json
@@ -89,6 +101,10 @@ Content-Type: application/json
 
 ### Listar todas as lições de um módulo
 GET {{baseUrl}}/modules/{{moduleId}}/lessons?page=0&size=10&sort=lessonId,asc
+Accept: application/json
+
+### Listar lições de um módulo com filtro de título
+GET {{baseUrl}}/modules/{{moduleId}}/lessons?title=Microsserviços
 Accept: application/json
 
 ### Buscar lição por ID no módulo

@@ -7,12 +7,13 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.matheustorres.eadhub.course.domain.models.Lesson;
 
-public interface LessonRepository extends JpaRepository<Lesson, UUID> {
+public interface LessonRepository extends JpaRepository<Lesson, UUID>, JpaSpecificationExecutor<Lesson> {
 
     @Query(value = "select l from Lesson l where l.module.moduleId = :moduleId order by l.creationDate asc")
     List<Lesson> findAllLessonsIntoModule(@Param("moduleId") UUID moduleId);

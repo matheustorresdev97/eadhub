@@ -52,11 +52,11 @@ public class Course extends RepresentationModel<Course> {
     private String imageUrl;
 
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime creationDate;
 
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime lastUpdateDate;
 
     @Column(nullable = false)
@@ -75,7 +75,8 @@ public class Course extends RepresentationModel<Course> {
     @Fetch(FetchMode.SUBSELECT)
     private Set<Module> modules;
 
-    public void updateCourse(String name, String description, String imageUrl, CourseStatus courseStatus, CourseLevel courseLevel) {
+    public void updateCourse(String name, String description, String imageUrl, CourseStatus courseStatus,
+            CourseLevel courseLevel) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;

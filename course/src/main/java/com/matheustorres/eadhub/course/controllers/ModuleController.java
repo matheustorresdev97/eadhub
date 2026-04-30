@@ -30,6 +30,7 @@ import com.matheustorres.eadhub.course.dtos.ModuleDTO;
 import com.matheustorres.eadhub.course.mappers.ModuleMapper;
 import com.matheustorres.eadhub.course.services.CourseService;
 import com.matheustorres.eadhub.course.services.ModuleService;
+import com.matheustorres.eadhub.course.specifications.SpecificationTemplate;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -81,8 +82,9 @@ public class ModuleController {
 
     @GetMapping
     public ResponseEntity<Page<Module>> getAllModules(@PathVariable(value = "courseId") UUID courseId,
+                                                     SpecificationTemplate.ModuleSpec spec,
                                                      @PageableDefault(page = 0, size = 10, sort = "moduleId", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<Module> modulePage = moduleService.findAllByCourse(courseId, pageable);
+        Page<Module> modulePage = moduleService.findAllByCourse(SpecificationTemplate.moduleCourseId(courseId).and(spec), pageable);
         if (!modulePage.isEmpty()) {
             for (Module module : modulePage) {
                 module.add(linkTo(methodOn(ModuleController.class).getModuleById(courseId, module.getModuleId())).withSelfRel());
