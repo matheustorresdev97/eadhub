@@ -1,5 +1,5 @@
 server:
-  port: 8086
+  port: 8082
 
 spring:
   output:
@@ -20,3 +20,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+
+authuser:
+  service:
+    url: http://localhost:8087

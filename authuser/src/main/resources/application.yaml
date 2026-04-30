@@ -20,3 +20,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+
+course:
+  service:
+    url: http://localhost:8082
