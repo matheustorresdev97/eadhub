@@ -1,6 +1,6 @@
-@baseUrl = http://localhost:8082
-@courseId = 00000000-0000-0000-0000-000000000000
-@moduleId = 00000000-0000-0000-0000-000000000000
+@baseUrl = http://localhost:8086
+@courseId = 6680832f-e10b-42f7-821c-503fbc89f00b
+@moduleId = 98ff54af-f329-4662-be28-0123f5bb704e
 @lessonId = 00000000-0000-0000-0000-000000000000
 
 ### ---------------- COURSE CONTROLLER ----------------
@@ -23,7 +23,7 @@ GET {{baseUrl}}/courses?page=0&size=5&sort=courseId,asc
 Accept: application/json
 
 ### Listar cursos com filtros (Exemplo: Level e Status)
-GET {{baseUrl}}/courses?courseLevel=ADVANCED&courseStatus=CONCLUDED
+GET {{baseUrl}}/courses?courseLevel=ADVANCED&courseStatus=INPROGRESS
 Accept: application/json
 
 ### Listar cursos com filtro de nome (Like)

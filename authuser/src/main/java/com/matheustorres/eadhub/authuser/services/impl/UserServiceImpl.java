@@ -25,6 +25,9 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -44,6 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(User user) {
+        log.info("UserServiceImpl::delete - Deletando usuário userId {}", user.getUserId());
         userRepository.delete(user);
     }
 
@@ -64,10 +68,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User registerUser(UserDTO userDto) {
+        log.info("UserServiceImpl::registerUser - Registrando usuário {}", userDto);
         if (existsByUsername(userDto.username())) {
+            log.warn("Username {} is Already Taken", userDto.username());
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Error: Username is already taken!");
         }
         if (existsByEmail(userDto.email())) {
+            log.warn("Email {} is Already Taken", userDto.email());
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Error: Email is already taken!");
         }
 
@@ -83,6 +90,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(UUID userId, UserDTO userDto) {
+        log.info("UserServiceImpl::updateUser - Atualizando usuário userId {}", userId);
         User user = findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
         user.updateInfo(userDto.fullName(), userDto.phoneNumber(), userDto.cpf());
         return userRepository.save(user);
@@ -90,8 +98,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(UUID userId, UserDTO userDto) {
+        log.info("UserServiceImpl::updatePassword - Atualizando senha userId {}", userId);
         User user = findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
         if (!user.getPassword().equals(userDto.oldPassword())) {
+            log.warn("Mismatched old password userId {}", userId);
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Error: Mismatched old password!");
         }
         user.updatePassword(userDto.password());
@@ -100,6 +110,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateImage(UUID userId, UserDTO userDto) {
+        log.info("UserServiceImpl::updateImage - Atualizando imagem userId {}", userId);
         User user = findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
         user.updateImage(userDto.imageUrl());
         return userRepository.save(user);
