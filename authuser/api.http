@@ -2,9 +2,11 @@
 @userId = 0b89ae4c-1848-4ca5-abf8-b7e37cb4e8a3
 @courseId = 6680832f-e10b-42f7-821c-503fbc89f00b
 
-### ---------------- AUTH CONTROLLER ----------------
+### ================================================================
+###                    1. AUTH CONTROLLER
+### ================================================================
 
-### Registrar um novo usuário (Sign Up)
+### 1.1 Registrar um novo usuário (Sign Up)
 POST {{baseUrl}}/auth/signup
 Content-Type: application/json
 
@@ -18,26 +20,59 @@ Content-Type: application/json
   "imageUrl": "http://image.com/matheus.png"
 }
 
+### 1.2 Registrar segundo usuário (aluno para testes)
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
 
-### ---------------- USER CONTROLLER ----------------
+{
+  "username": "aluno01",
+  "email": "aluno01@email.com",
+  "password": "password123",
+  "fullName": "Aluno Teste",
+  "phoneNumber": "11977777777",
+  "cpf": "98765432100",
+  "imageUrl": "http://image.com/aluno.png"
+}
 
-### Buscar todos os usuários (Paginado e Ordenado)
+
+### ================================================================
+###                2. INSTRUCTOR CONTROLLER
+### ================================================================
+
+### 2.1 Registrar usuário como instrutor
+POST {{baseUrl}}/instructors/subscription
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}"
+}
+
+
+### ================================================================
+###                    3. USER CONTROLLER
+### ================================================================
+
+### 3.1 Buscar todos os usuários (Paginado e Ordenado)
 GET {{baseUrl}}/users?page=0&size=5&sort=userId,asc
 Accept: application/json
 
-### Buscar todos os usuários (Com Filtro Specification)
+### 3.2 Buscar todos os usuários (Com Filtro Specification)
 GET {{baseUrl}}/users?userType=STUDENT&userStatus=ACTIVE
 Accept: application/json
 
-### Buscar todos os usuários de um curso específico (courseId)
+### 3.3 Buscar todos os usuários por tipo INSTRUCTOR
+GET {{baseUrl}}/users?userType=INSTRUCTOR
+Accept: application/json
+
+### 3.4 Buscar todos os usuários de um curso específico (courseId)
 GET {{baseUrl}}/users?courseId={{courseId}}
 Accept: application/json
 
-### Buscar usuário por ID
+### 3.5 Buscar usuário por ID
 GET {{baseUrl}}/users/{{userId}}
 Accept: application/json
 
-### Atualizar dados básicos do usuário
+### 3.6 Atualizar dados básicos do usuário
 PUT {{baseUrl}}/users/{{userId}}
 Content-Type: application/json
 
@@ -47,7 +82,7 @@ Content-Type: application/json
   "cpf": "12345678901"
 }
 
-### Atualizar senha do usuário
+### 3.7 Atualizar senha do usuário
 PUT {{baseUrl}}/users/{{userId}}/password
 Content-Type: application/json
 
@@ -56,7 +91,7 @@ Content-Type: application/json
   "password": "newpassword123"
 }
 
-### Atualizar imagem do usuário
+### 3.8 Atualizar imagem do usuário
 PUT {{baseUrl}}/users/{{userId}}/image
 Content-Type: application/json
 
@@ -64,5 +99,22 @@ Content-Type: application/json
   "imageUrl": "http://image.com/matheus_new_profile.png"
 }
 
-### Deletar usuário
+### 3.9 Deletar usuário
 DELETE {{baseUrl}}/users/{{userId}}
+
+
+### ================================================================
+###              4. USER-COURSE CONTROLLER (OpenFeign)
+### ================================================================
+
+### 4.1 Listar cursos de um usuário (via Feign -> Course Service)
+GET {{baseUrl}}/users/{{userId}}/courses?page=0&size=10&sort=courseId,asc
+Accept: application/json
+
+### 4.2 Inscrever usuário em um curso (salva localmente)
+POST {{baseUrl}}/users/{{userId}}/courses/subscription
+Content-Type: application/json
+
+{
+  "courseId": "{{courseId}}"
+}

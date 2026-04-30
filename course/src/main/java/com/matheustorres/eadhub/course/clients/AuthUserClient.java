@@ -15,7 +15,7 @@ import com.matheustorres.eadhub.course.dtos.CourseUserDTO;
 import com.matheustorres.eadhub.course.dtos.ResponsePageDto;
 import com.matheustorres.eadhub.course.dtos.UserDTO;
 
-@FeignClient(name = "authuser-service", url = "${authuser.service.url}")
+@FeignClient(name = "eadhub-authuser")
 public interface AuthUserClient {
 
     @GetMapping("/users")

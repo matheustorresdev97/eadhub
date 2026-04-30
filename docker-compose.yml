@@ -11,5 +11,13 @@ services:
       - eadhub-db-data:/var/lib/postgresql/data
       - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql
 
+  consul:
+    image: hashicorp/consul:1.19
+    container_name: eadhub-consul
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    command: agent -server -bootstrap-expect=1 -ui -client=0.0.0.0
+
 volumes:
   eadhub-db-data:

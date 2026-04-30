@@ -6,7 +6,7 @@ spring:
     ansi:
       enabled: ALWAYS
   application:
-    name: course
+    name: eadhub-course
   datasource:
     url: jdbc:postgresql://localhost:5432/eadhub-course
     username: postgres
@@ -20,7 +20,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-
-authuser:
-  service:
-    url: http://localhost:8087
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}

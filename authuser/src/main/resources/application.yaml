@@ -1,12 +1,12 @@
 server:
   port: 8087
-  
+
 spring:
   output:
     ansi:
       enabled: ALWAYS
   application:
-    name: authuser
+    name: eadhub-authuser
   datasource:
     url: jdbc:postgresql://localhost:5432/eadhub-authuser
     username: postgres
@@ -20,7 +20,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-
-course:
-  service:
-    url: http://localhost:8082
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}

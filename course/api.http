@@ -1,12 +1,14 @@
-@baseUrl = http://localhost:8086
+@baseUrl = http://localhost:8082
 @userId = 0b89ae4c-1848-4ca5-abf8-b7e37cb4e8a3
 @courseId = 6680832f-e10b-42f7-821c-503fbc89f00b
 @moduleId = 98ff54af-f329-4662-be28-0123f5bb704e
 @lessonId = 00000000-0000-0000-0000-000000000000
 
-### ---------------- COURSE CONTROLLER ----------------
+### ================================================================
+###                   1. COURSE CONTROLLER
+### ================================================================
 
-### Criar um novo curso
+### 1.1 Criar um novo curso (valida se userInstructor é INSTRUCTOR)
 POST {{baseUrl}}/courses
 Content-Type: application/json
 
@@ -16,30 +18,30 @@ Content-Type: application/json
   "imageUrl": "http://image.com/course.png",
   "courseStatus": "INPROGRESS",
   "courseLevel": "ADVANCED",
-  "userInstructor": "e6f4a86b-873b-466d-a7a5-48b26e0e027d"
+  "userInstructor": "{{userId}}"
 }
 
-### Listar todos os cursos (Paginado e Ordenado)
+### 1.2 Listar todos os cursos (Paginado e Ordenado)
 GET {{baseUrl}}/courses?page=0&size=5&sort=courseId,asc
 Accept: application/json
 
-### Listar cursos com filtros (Exemplo: Level e Status)
+### 1.3 Listar cursos com filtros (Level e Status)
 GET {{baseUrl}}/courses?courseLevel=ADVANCED&courseStatus=INPROGRESS
 Accept: application/json
 
-### Listar cursos com filtro de nome (Like)
+### 1.4 Listar cursos com filtro de nome (Like)
 GET {{baseUrl}}/courses?name=Spring
 Accept: application/json
 
-### Listar cursos de um usuário específico (userId)
+### 1.5 Listar cursos de um usuário específico (userId)
 GET {{baseUrl}}/courses?userId={{userId}}
 Accept: application/json
 
-### Buscar curso por ID
+### 1.6 Buscar curso por ID
 GET {{baseUrl}}/courses/{{courseId}}
 Accept: application/json
 
-### Atualizar curso
+### 1.7 Atualizar curso
 PUT {{baseUrl}}/courses/{{courseId}}
 Content-Type: application/json
 
@@ -49,16 +51,35 @@ Content-Type: application/json
   "imageUrl": "http://image.com/course-expert.png",
   "courseStatus": "CONCLUDED",
   "courseLevel": "ADVANCED",
-  "userInstructor": "e6f4a86b-873b-466d-a7a5-48b26e0e027d"
+  "userInstructor": "{{userId}}"
 }
 
-### Deletar curso
+### 1.8 Deletar curso
 DELETE {{baseUrl}}/courses/{{courseId}}
 
 
-### ---------------- MODULE CONTROLLER ----------------
+### ================================================================
+###            2. COURSE-USER CONTROLLER (OpenFeign)
+### ================================================================
 
-### Criar um novo módulo
+### 2.1 Listar usuários inscritos em um curso (via Feign -> AuthUser)
+GET {{baseUrl}}/courses/{{courseId}}/users?page=0&size=10&sort=userId,asc
+Accept: application/json
+
+### 2.2 Inscrever usuário em um curso (valida user via Feign + salva nos dois serviços)
+POST {{baseUrl}}/courses/{{courseId}}/users/subscription
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}"
+}
+
+
+### ================================================================
+###                  3. MODULE CONTROLLER
+### ================================================================
+
+### 3.1 Criar um novo módulo
 POST {{baseUrl}}/courses/{{courseId}}/modules
 Content-Type: application/json
 
@@ -67,19 +88,19 @@ Content-Type: application/json
   "description": "Conceitos fundamentais e arquitetura"
 }
 
-### Listar todos os módulos de um curso
+### 3.2 Listar todos os módulos de um curso
 GET {{baseUrl}}/courses/{{courseId}}/modules?page=0&size=10&sort=moduleId,asc
 Accept: application/json
 
-### Listar módulos de um curso com filtro de título
+### 3.3 Listar módulos de um curso com filtro de título
 GET {{baseUrl}}/courses/{{courseId}}/modules?title=Introdução
 Accept: application/json
 
-### Buscar módulo por ID no curso
+### 3.4 Buscar módulo por ID no curso
 GET {{baseUrl}}/courses/{{courseId}}/modules/{{moduleId}}
 Accept: application/json
 
-### Atualizar módulo
+### 3.5 Atualizar módulo
 PUT {{baseUrl}}/courses/{{courseId}}/modules/{{moduleId}}
 Content-Type: application/json
 
@@ -88,13 +109,15 @@ Content-Type: application/json
   "description": "Conceitos fundamentais, arquitetura e padrões"
 }
 
-### Deletar módulo
+### 3.6 Deletar módulo
 DELETE {{baseUrl}}/courses/{{courseId}}/modules/{{moduleId}}
 
 
-### ---------------- LESSON CONTROLLER ----------------
+### ================================================================
+###                   4. LESSON CONTROLLER
+### ================================================================
 
-### Criar uma nova lição
+### 4.1 Criar uma nova lição
 POST {{baseUrl}}/modules/{{moduleId}}/lessons
 Content-Type: application/json
 
@@ -104,19 +127,19 @@ Content-Type: application/json
   "videoUrl": "https://youtube.com/lesson1"
 }
 
-### Listar todas as lições de um módulo
+### 4.2 Listar todas as lições de um módulo
 GET {{baseUrl}}/modules/{{moduleId}}/lessons?page=0&size=10&sort=lessonId,asc
 Accept: application/json
 
-### Listar lições de um módulo com filtro de título
+### 4.3 Listar lições de um módulo com filtro de título
 GET {{baseUrl}}/modules/{{moduleId}}/lessons?title=Microsserviços
 Accept: application/json
 
-### Buscar lição por ID no módulo
+### 4.4 Buscar lição por ID no módulo
 GET {{baseUrl}}/modules/{{moduleId}}/lessons/{{lessonId}}
 Accept: application/json
 
-### Atualizar lição
+### 4.5 Atualizar lição
 PUT {{baseUrl}}/modules/{{moduleId}}/lessons/{{lessonId}}
 Content-Type: application/json
 
@@ -126,5 +149,5 @@ Content-Type: application/json
   "videoUrl": "https://youtube.com/lesson1-revised"
 }
 
-### Deletar lição
+### 4.6 Deletar lição
 DELETE {{baseUrl}}/modules/{{moduleId}}/lessons/{{lessonId}}

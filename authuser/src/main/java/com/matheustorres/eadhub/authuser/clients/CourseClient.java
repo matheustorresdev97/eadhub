@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.matheustorres.eadhub.authuser.dtos.ResponsePageDto;
 import com.matheustorres.eadhub.authuser.dtos.CourseDTO;
 
-@FeignClient(name = "course-service", url = "${course.service.url}")
+@FeignClient(name = "eadhub-course")
 public interface CourseClient {
 
     @GetMapping("/courses")
