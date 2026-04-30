@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.matheustorres.eadhub.authuser.domain.models.User;
 import com.matheustorres.eadhub.authuser.dtos.UserDTO;
 import com.matheustorres.eadhub.authuser.services.UserService;
-import com.matheustorres.eadhub.authuser.specifications.SpecificationTemplate;
+import com.matheustorres.eadhub.authuser.specifications.UserSpec;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,7 +39,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<Page<User>> getAllUsers(SpecificationTemplate.UserSpec spec,
+    public ResponseEntity<Page<User>> getAllUsers(UserSpec spec,
                                                   @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
         Page<User> userModelPage = userService.findAll(spec, pageable);
         if (!userModelPage.isEmpty()) {

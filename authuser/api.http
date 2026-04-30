@@ -1,0 +1,63 @@
+@baseUrl = http://localhost:8087
+@userId = 0b89ae4c-1848-4ca5-abf8-b7e37cb4e8a3
+
+### ---------------- AUTH CONTROLLER ----------------
+
+### Registrar um novo usuário (Sign Up)
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+  "username": "matheus123",
+  "email": "matheus@email.com",
+  "password": "password123",
+  "fullName": "Matheus Torres",
+  "phoneNumber": "11999999999",
+  "cpf": "12345678901",
+  "imageUrl": "http://image.com/matheus.png"
+}
+
+
+### ---------------- USER CONTROLLER ----------------
+
+### Buscar todos os usuários (Paginado e Ordenado)
+GET {{baseUrl}}/users?page=0&size=5&sort=userId,asc
+Accept: application/json
+
+### Buscar todos os usuários (Com Filtro Specification)
+GET {{baseUrl}}/users?userType=STUDENT&userStatus=ACTIVE
+Accept: application/json
+
+### Buscar usuário por ID
+GET {{baseUrl}}/users/{{userId}}
+Accept: application/json
+
+### Atualizar dados básicos do usuário
+PUT {{baseUrl}}/users/{{userId}}
+Content-Type: application/json
+
+{
+  "fullName": "Matheus Torres",
+  "phoneNumber": "11988888888",
+  "cpf": "12345678901"
+}
+
+### Atualizar senha do usuário
+PUT {{baseUrl}}/users/{{userId}}/password
+Content-Type: application/json
+
+{
+  "oldPassword": "password123",
+  "password": "newpassword123"
+}
+
+### Atualizar imagem do usuário
+PUT {{baseUrl}}/users/{{userId}}/image
+Content-Type: application/json
+
+{
+  "imageUrl": "http://image.com/matheus_new_profile.png"
+}
+
+### Deletar usuário
+DELETE {{baseUrl}}/users/{{userId}}

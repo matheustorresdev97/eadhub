@@ -5,7 +5,7 @@ spring:
   application:
     name: authuser
   datasource:
-    url: jdbc:postgresql://eadhub-authuser:5432/eadhub-authuser
+    url: jdbc:postgresql://localhost:5432/eadhub-authuser
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
