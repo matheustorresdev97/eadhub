@@ -95,4 +95,8 @@ public class Course extends RepresentationModel<Course> {
     public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
+
+    public CourseUser convertToCourseUserModel(UUID userId) {
+        return new CourseUser(null, this, userId);
+    }
 }
