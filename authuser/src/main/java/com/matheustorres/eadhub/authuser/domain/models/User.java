@@ -103,4 +103,9 @@ public class User extends RepresentationModel<User> {
         this.imageUrl = imageUrl;
         this.lastUpdateDate = LocalDateTime.now(java.time.ZoneId.of("UTC"));
     }
+
+    public void updateInstructor() {
+        this.userType = UserType.INSTRUCTOR;
+        this.lastUpdateDate = LocalDateTime.now(java.time.ZoneId.of("UTC"));
+    }
 }

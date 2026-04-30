@@ -115,4 +115,11 @@ public class UserServiceImpl implements UserService {
         user.updateImage(userDto.imageUrl());
         return userRepository.save(user);
     }
+
+    @Override
+    public User registerInstructor(User user) {
+        log.info("UserServiceImpl::registerInstructor - Registrando usuário como instrutor userId {}", user.getUserId());
+        user.updateInstructor();
+        return userRepository.save(user);
+    }
 }

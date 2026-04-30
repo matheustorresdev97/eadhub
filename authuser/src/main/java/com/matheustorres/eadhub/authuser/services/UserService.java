@@ -31,4 +31,6 @@ public interface UserService {
     void updatePassword(UUID userId, UserDTO userDto);
 
     User updateImage(UUID userId, UserDTO userDto);
+
+    User registerInstructor(User user);
 }
