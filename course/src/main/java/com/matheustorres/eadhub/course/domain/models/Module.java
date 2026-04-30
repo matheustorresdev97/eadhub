@@ -19,6 +19,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import org.springframework.hateoas.RepresentationModel;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,7 +34,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "tb_modules")
-public class Module {
+public class Module extends RepresentationModel<Module> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID moduleId;
@@ -55,4 +57,9 @@ public class Module {
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     private Set<Lesson> lessons;
+
+    public void updateModule(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
 }
