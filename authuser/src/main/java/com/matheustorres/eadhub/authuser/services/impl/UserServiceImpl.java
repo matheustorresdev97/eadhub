@@ -11,13 +11,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.matheustorres.eadhub.authuser.domain.enums.UserStatus;
 import com.matheustorres.eadhub.authuser.domain.enums.UserType;
 import com.matheustorres.eadhub.authuser.domain.models.User;
+import com.matheustorres.eadhub.authuser.domain.models.UserCourse;
 import com.matheustorres.eadhub.authuser.dtos.UserDTO;
 import com.matheustorres.eadhub.authuser.mappers.UserMapper;
+import com.matheustorres.eadhub.authuser.repositories.UserCourseRepository;
 import com.matheustorres.eadhub.authuser.repositories.UserRepository;
 import com.matheustorres.eadhub.authuser.services.UserService;
 
@@ -33,6 +36,7 @@ import lombok.extern.log4j.Log4j2;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserCourseRepository userCourseRepository;
     private final UserMapper userMapper;
 
     @Override
@@ -45,9 +49,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(userId);
     }
 
+    @Transactional
     @Override
     public void delete(User user) {
         log.info("UserServiceImpl::delete - Deletando usuário userId {}", user.getUserId());
+        List<UserCourse> userCourseList = userCourseRepository.findAllUserCourseIntoUser(user.getUserId());
+        if (!userCourseList.isEmpty()) {
+            userCourseRepository.deleteAll(userCourseList);
+        }
         userRepository.delete(user);
     }
 
@@ -79,19 +88,20 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userMapper.toEntityBuilder(userDto)
-            .userStatus(UserStatus.ACTIVE)
-            .userType(UserType.STUDENT)
-            .creationDate(LocalDateTime.now(ZoneId.of("UTC")))
-            .lastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")))
-            .build();
-        
+                .userStatus(UserStatus.ACTIVE)
+                .userType(UserType.STUDENT)
+                .creationDate(LocalDateTime.now(ZoneId.of("UTC")))
+                .lastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")))
+                .build();
+
         return userRepository.save(user);
     }
 
     @Override
     public User updateUser(UUID userId, UserDTO userDto) {
         log.info("UserServiceImpl::updateUser - Atualizando usuário userId {}", userId);
-        User user = findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+        User user = findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
         user.updateInfo(userDto.fullName(), userDto.phoneNumber(), userDto.cpf());
         return userRepository.save(user);
     }
@@ -99,7 +109,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(UUID userId, UserDTO userDto) {
         log.info("UserServiceImpl::updatePassword - Atualizando senha userId {}", userId);
-        User user = findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+        User user = findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
         if (!user.getPassword().equals(userDto.oldPassword())) {
             log.warn("Mismatched old password userId {}", userId);
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Error: Mismatched old password!");
@@ -111,14 +122,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateImage(UUID userId, UserDTO userDto) {
         log.info("UserServiceImpl::updateImage - Atualizando imagem userId {}", userId);
-        User user = findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+        User user = findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
         user.updateImage(userDto.imageUrl());
         return userRepository.save(user);
     }
 
     @Override
     public User registerInstructor(User user) {
-        log.info("UserServiceImpl::registerInstructor - Registrando usuário como instrutor userId {}", user.getUserId());
+        log.info("UserServiceImpl::registerInstructor - Registrando usuário como instrutor userId {}",
+                user.getUserId());
         user.updateInstructor();
         return userRepository.save(user);
     }

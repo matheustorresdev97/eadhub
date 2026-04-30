@@ -15,17 +15,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.matheustorres.eadhub.course.domain.models.Course;
+import com.matheustorres.eadhub.course.domain.models.CourseUser;
 import com.matheustorres.eadhub.course.domain.models.Lesson;
 import com.matheustorres.eadhub.course.domain.models.Module;
 import com.matheustorres.eadhub.course.dtos.CourseDTO;
 import com.matheustorres.eadhub.course.mappers.CourseMapper;
 import com.matheustorres.eadhub.course.repositories.CourseRepository;
+import com.matheustorres.eadhub.course.repositories.CourseUserRepository;
 import com.matheustorres.eadhub.course.repositories.LessonRepository;
 import com.matheustorres.eadhub.course.repositories.ModuleRepository;
 import com.matheustorres.eadhub.course.services.CourseService;
 
 import lombok.RequiredArgsConstructor;
-
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,7 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final ModuleRepository moduleRepository;
     private final LessonRepository lessonRepository;
+    private final CourseUserRepository courseUserRepository;
     private final CourseMapper courseMapper;
 
     @Override
@@ -48,6 +50,10 @@ public class CourseServiceImpl implements CourseService {
                 }
             }
             moduleRepository.deleteAll(moduleList);
+        }
+        List<CourseUser> courseUserList = courseUserRepository.findAllCourseUserIntoCourse(course.getCourseId());
+        if (!courseUserList.isEmpty()) {
+            courseUserRepository.deleteAll(courseUserList);
         }
         courseRepository.delete(course);
     }
@@ -72,8 +78,10 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course update(UUID courseId, CourseDTO courseDto) {
-        Course course = findById(courseId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found."));
-        course.updateCourse(courseDto.name(), courseDto.description(), courseDto.imageUrl(), courseDto.courseStatus(), courseDto.courseLevel());
+        Course course = findById(courseId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found."));
+        course.updateCourse(courseDto.name(), courseDto.description(), courseDto.imageUrl(), courseDto.courseStatus(),
+                courseDto.courseLevel());
         return courseRepository.save(course);
     }
 }
