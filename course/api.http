@@ -1,4 +1,5 @@
 @baseUrl = http://localhost:8086
+@userId = 0b89ae4c-1848-4ca5-abf8-b7e37cb4e8a3
 @courseId = 6680832f-e10b-42f7-821c-503fbc89f00b
 @moduleId = 98ff54af-f329-4662-be28-0123f5bb704e
 @lessonId = 00000000-0000-0000-0000-000000000000
@@ -28,6 +29,10 @@ Accept: application/json
 
 ### Listar cursos com filtro de nome (Like)
 GET {{baseUrl}}/courses?name=Spring
+Accept: application/json
+
+### Listar cursos de um usuário específico (userId)
+GET {{baseUrl}}/courses?userId={{userId}}
 Accept: application/json
 
 ### Buscar curso por ID

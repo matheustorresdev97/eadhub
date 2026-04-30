@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.matheustorres.eadhub.course.domain.models.Course;
@@ -65,8 +66,14 @@ public class CourseController {
 
     @GetMapping
     public ResponseEntity<Page<Course>> getAllCourses(SpecificationTemplate.CourseSpec spec,
-                                                     @PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<Course> coursePage = courseService.findAll(spec, pageable);
+                                                     @PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
+                                                     @RequestParam(required = false) UUID userId) {
+        Page<Course> coursePage = null;
+        if (userId != null) {
+            coursePage = courseService.findAll(SpecificationTemplate.courseUserId(userId).and(spec), pageable);
+        } else {
+            coursePage = courseService.findAll(spec, pageable);
+        }
         if (!coursePage.isEmpty()) {
             for (Course course : coursePage) {
                 course.add(linkTo(methodOn(CourseController.class).getOneCourse(course.getCourseId())).withSelfRel());

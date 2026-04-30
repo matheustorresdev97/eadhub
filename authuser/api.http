@@ -1,5 +1,6 @@
 @baseUrl = http://localhost:8087
 @userId = 0b89ae4c-1848-4ca5-abf8-b7e37cb4e8a3
+@courseId = 6680832f-e10b-42f7-821c-503fbc89f00b
 
 ### ---------------- AUTH CONTROLLER ----------------
 
@@ -26,6 +27,10 @@ Accept: application/json
 
 ### Buscar todos os usuários (Com Filtro Specification)
 GET {{baseUrl}}/users?userType=STUDENT&userStatus=ACTIVE
+Accept: application/json
+
+### Buscar todos os usuários de um curso específico (courseId)
+GET {{baseUrl}}/users?courseId={{courseId}}
 Accept: application/json
 
 ### Buscar usuário por ID

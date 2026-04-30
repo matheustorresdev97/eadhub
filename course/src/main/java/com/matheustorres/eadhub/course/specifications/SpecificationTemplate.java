@@ -6,11 +6,13 @@ import java.util.UUID;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.matheustorres.eadhub.course.domain.models.Course;
+import com.matheustorres.eadhub.course.domain.models.CourseUser;
 import com.matheustorres.eadhub.course.domain.models.Lesson;
 import com.matheustorres.eadhub.course.domain.models.Module;
 
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Join;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
@@ -51,6 +53,14 @@ public class SpecificationTemplate {
             Root<Module> module = query.from(Module.class);
             Expression<Collection<Lesson>> modulesLessons = module.get("lessons");
             return cb.and(cb.equal(module.get("moduleId"), moduleId), cb.isMember(lesson, modulesLessons));
+        };
+    }
+
+     public static Specification<Course> courseUserId(final UUID userId) {
+        return(root,query,cb) -> {
+            query.distinct(true);
+            Join<Course, CourseUser> courseProd = root.join("coursesUsers");
+            return cb.equal(courseProd.get("userId"), userId);
         };
     }
 }
