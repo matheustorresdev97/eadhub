@@ -83,6 +83,10 @@ public class User extends RepresentationModel<User> {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<UserCourse> usersCourses;
 
+    public UserCourse convertToUserCourse(UUID courseId) {
+        return new UserCourse(null, this, courseId);
+    }
+
     public void updateInfo(String fullName, String phoneNumber, String cpf) {
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
