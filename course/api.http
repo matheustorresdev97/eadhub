@@ -1,0 +1,41 @@
+@baseUrl = http://localhost:8082
+@courseId = 00000000-0000-0000-0000-000000000000
+
+### ---------------- COURSE CONTROLLER ----------------
+
+### Criar um novo curso
+POST {{baseUrl}}/courses
+Content-Type: application/json
+
+{
+  "name": "Spring Boot Microservices",
+  "description": "Curso completo de microsserviços com Spring Boot e Docker",
+  "imageUrl": "http://image.com/course.png",
+  "courseStatus": "INPROGRESS",
+  "courseLevel": "ADVANCED",
+  "userInstructor": "e6f4a86b-873b-466d-a7a5-48b26e0e027d"
+}
+
+### Listar todos os cursos (Paginado e Ordenado)
+GET {{baseUrl}}/courses?page=0&size=5&sort=courseId,asc
+Accept: application/json
+
+### Buscar curso por ID
+GET {{baseUrl}}/courses/{{courseId}}
+Accept: application/json
+
+### Atualizar curso
+PUT {{baseUrl}}/courses/{{courseId}}
+Content-Type: application/json
+
+{
+  "name": "Spring Boot Microservices Expert",
+  "description": "Curso avançado de microsserviços com Spring Cloud",
+  "imageUrl": "http://image.com/course-expert.png",
+  "courseStatus": "CONCLUDED",
+  "courseLevel": "ADVANCED",
+  "userInstructor": "e6f4a86b-873b-466d-a7a5-48b26e0e027d"
+}
+
+### Deletar curso
+DELETE {{baseUrl}}/courses/{{courseId}}

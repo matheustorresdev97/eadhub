@@ -1,5 +1,18 @@
+package com.matheustorres.eadhub.course.services;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.matheustorres.eadhub.course.domain.models.Course;
+import com.matheustorres.eadhub.course.dtos.CourseDTO;
 
 public interface CourseService {
     void delete(Course course);
+    Page<Course> findAll(Pageable pageable);
+    Optional<Course> findById(UUID courseId);
+    Course save(CourseDTO courseDto);
+    Course update(UUID courseId, CourseDTO courseDto);
 }

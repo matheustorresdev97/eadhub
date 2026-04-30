@@ -1,6 +1,7 @@
 package com.matheustorres.eadhub.course.domain.models;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,6 +23,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import org.springframework.hateoas.RepresentationModel;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,13 +32,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "tb_courses")
-public class Course {
+public class Course extends RepresentationModel<Course> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID courseId;
@@ -72,4 +74,21 @@ public class Course {
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     private Set<Module> modules;
+
+    public void updateCourse(String name, String description, String imageUrl, CourseStatus courseStatus, CourseLevel courseLevel) {
+        this.name = name;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.courseStatus = courseStatus;
+        this.courseLevel = courseLevel;
+        this.lastUpdateDate = LocalDateTime.now(ZoneId.of("UTC"));
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
+    }
 }
