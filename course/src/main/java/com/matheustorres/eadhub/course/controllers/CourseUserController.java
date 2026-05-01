@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.matheustorres.eadhub.course.domain.models.Course;
 import com.matheustorres.eadhub.course.dtos.SubscriptionDTO;
 import com.matheustorres.eadhub.course.services.CourseService;
+import com.matheustorres.eadhub.course.services.UserService;
+import com.matheustorres.eadhub.course.specifications.UserSpec;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,17 +34,18 @@ import lombok.extern.log4j.Log4j2;
 public class CourseUserController {
 
     private final CourseService courseService;
-    //private final UserService userService;
+    private final UserService userService;
 
     @GetMapping("/{courseId}/users")
     public ResponseEntity<Object> getAllUsersByCourse(
             @PathVariable(value = "courseId") UUID courseId,
+            UserSpec spec,
             @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
         log.info("GET request GET /courses/{}/users", courseId);
         if (!courseService.existsByCourseId(courseId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Users by course");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.findAll(UserSpec.userCourseId(courseId).and(spec), pageable));
     }
 
     @PostMapping("/{courseId}/users/subscription")

@@ -21,6 +21,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import org.springframework.hateoas.RepresentationModel;
@@ -74,6 +77,10 @@ public class Course extends RepresentationModel<Course> {
     @Fetch(FetchMode.SUBSELECT)
     private Set<Module> modules;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "tb_courses_users", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> users;
 
     public void updateCourse(String name, String description, String imageUrl, CourseStatus courseStatus,
             CourseLevel courseLevel) {

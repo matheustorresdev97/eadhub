@@ -16,19 +16,20 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 @And({
-        @Spec(path = "courseLevel", spec = Equal.class),
-        @Spec(path = "courseStatus", spec = Equal.class),
-        @Spec(path = "name", spec = Like.class)
+        @Spec(path = "email", spec = Like.class),
+        @Spec(path = "fullName", spec = Like.class),
+        @Spec(path = "userStatus", spec = Equal.class),
+        @Spec(path = "userType", spec = Equal.class)
 })
-public interface CourseSpec extends Specification<Course> {
+public interface UserSpec extends Specification<User> {
 
-    public static Specification<Course> courseUserId(final UUID userId) {
+    public static Specification<User> userCourseId(final UUID courseId) {
         return (root, query, cb) -> {
             query.distinct(true);
-            Root<Course> course = root;
-            Root<User> user = query.from(User.class);
-            Expression<Collection<Course>> usersCourses = user.get("courses");
-            return cb.and(cb.equal(user.get("userId"), userId), cb.isMember(course, usersCourses));
+            Root<User> user = root;
+            Root<Course> course = query.from(Course.class);
+            Expression<Collection<User>> coursesUsers = course.get("users");
+            return cb.and(cb.equal(course.get("courseId"), courseId), cb.isMember(user, coursesUsers));
         };
     }
 }
