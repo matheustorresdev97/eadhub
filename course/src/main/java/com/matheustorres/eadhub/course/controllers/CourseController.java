@@ -24,9 +24,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.matheustorres.eadhub.course.domain.enums.UserStatus;
 import com.matheustorres.eadhub.course.domain.models.Course;
+import com.matheustorres.eadhub.course.domain.models.User;
 import com.matheustorres.eadhub.course.dtos.CourseDTO;
 import com.matheustorres.eadhub.course.services.CourseService;
+import com.matheustorres.eadhub.course.services.UserService;
 import com.matheustorres.eadhub.course.specifications.CourseSpec;
 import com.matheustorres.eadhub.course.validation.CourseValidator;
 
@@ -41,6 +44,7 @@ public class CourseController {
 
     private final CourseService courseService;
     private final CourseValidator courseValidator;
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<Object> saveCourse(@RequestBody @Valid CourseDTO courseDTO, Errors errors) {

@@ -18,4 +18,6 @@ public interface UserService {
     void delete(UUID userId);
 
     Optional<User> findById(UUID userId);
+
+    Optional<User> findByInstructorId(UUID userInstructor);
 }

@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.matheustorres.eadhub.course.domain.enums.UserStatus;
+import com.matheustorres.eadhub.course.domain.models.User;
 import com.matheustorres.eadhub.course.domain.models.Course;
 import com.matheustorres.eadhub.course.dtos.SubscriptionDTO;
 import com.matheustorres.eadhub.course.services.CourseService;
 import com.matheustorres.eadhub.course.services.UserService;
 import com.matheustorres.eadhub.course.specifications.UserSpec;
+import org.springframework.data.domain.Pageable;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,11 +54,27 @@ public class CourseUserController {
     @PostMapping("/{courseId}/users/subscription")
     public ResponseEntity<Object> saveSubscriptionUserInCourse(@PathVariable(value = "courseId") UUID courseId,
             @RequestBody @Valid SubscriptionDTO subscriptionDTO) {
+        
         Optional<Course> courseOptional = courseService.findById(courseId);
-        if (!courseOptional.isPresent()) {
+        if (courseOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.");
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Subscription user in course");
+        if (courseService.existsByCourseAndUser(courseId, subscriptionDTO.userId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: subscription already exists!");
+        }
+
+        Optional<User> userModelOptional = userService.findById(subscriptionDTO.userId());
+        if (userModelOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+
+        if (userModelOptional.get().getUserStatus().equals(UserStatus.BLOCKED.name())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User is blocked.");
+        }
+
+        courseService.saveSubscriptionUserInCourse(courseOptional.get().getCourseId(), userModelOptional.get().getUserId());
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body("Subscription created successfully.");
     }
 }

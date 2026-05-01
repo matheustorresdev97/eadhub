@@ -56,6 +56,7 @@ public class CourseServiceImpl implements CourseService {
             }
             moduleRepository.deleteAll(moduleList);
         }
+        courseRepository.deleteCourseUserByCourse(course.getCourseId());
         courseRepository.delete(course);
     }
 
@@ -84,5 +85,16 @@ public class CourseServiceImpl implements CourseService {
         course.updateCourse(courseDto.name(), courseDto.description(), courseDto.imageUrl(), courseDto.courseStatus(),
                 courseDto.courseLevel());
         return courseRepository.save(course);
+    }
+
+    @Override
+    public boolean existsByCourseAndUser(UUID courseId, UUID userId) {
+        return courseRepository.existsByCourseAndUser(courseId, userId);
+    }
+
+    @Transactional
+    @Override
+    public void saveSubscriptionUserInCourse(UUID courseId, UUID userId) {
+        courseRepository.saveCourseUser(courseId, userId);
     }
 }

@@ -1,5 +1,6 @@
 package com.matheustorres.eadhub.course.validation;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -7,15 +8,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import com.matheustorres.eadhub.course.domain.enums.UserType;
+import com.matheustorres.eadhub.course.domain.models.User;
 import com.matheustorres.eadhub.course.dtos.CourseDTO;
+import com.matheustorres.eadhub.course.services.UserService;
 
 @Component
 public class CourseValidator implements Validator {
 
     private final Validator validator;
+    private final UserService userService;
 
-    public CourseValidator(@Qualifier("defaultValidator") Validator validator) {
+    public CourseValidator(@Qualifier("defaultValidator") Validator validator, UserService userService) {
         this.validator = validator;
+        this.userService = userService;
     }
 
     @Override
@@ -33,20 +39,13 @@ public class CourseValidator implements Validator {
     }
 
     private void validaUserInstructor(UUID userInstructor, Errors errors) {
-        // UserDTO userDto;
-        // try{
-        // userDto = authUserClient.getUserById(userInstructor);
-        // if(userDto.userType().equals(UserType.STUDENT)){
-        // errors.rejectValue("userInstructor", "UserInstructorError", "User must be
-        // INSTRUCTOR or ADMIN.");
-        // }
-        // } catch (FeignException.NotFound e){
-        // errors.rejectValue("userInstructor", "UserInstructorError", "Instructor not
-        // found.");
-        // } catch (FeignException e) {
-        // errors.rejectValue("userInstructor", "UserInstructorError", "Error
-        // communicating with AuthUser service.");
-        // }
+        Optional<User> optUser = userService.findByInstructorId(userInstructor);
+        if (!optUser.isPresent()) {
+            errors.rejectValue("userInstructor", "UserInstructorError", "Instructor not found.");
+        }
+        if (optUser.get().getUserType().equals(UserType.STUDENT)) {
+            errors.rejectValue("userInstructor", "UserInstructorError", "User must be INSTRUCTOR or ADMIN.");
+        }
     }
 
 }

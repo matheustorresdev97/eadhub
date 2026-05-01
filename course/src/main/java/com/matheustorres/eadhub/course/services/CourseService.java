@@ -22,4 +22,8 @@ public interface CourseService {
     Course save(CourseDTO courseDto);
 
     Course update(UUID courseId, CourseDTO courseDto);
+
+    boolean existsByCourseAndUser(UUID courseId, UUID userId);
+
+    void saveSubscriptionUserInCourse(UUID courseId, UUID userId);
 }
