@@ -5,9 +5,7 @@ import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.matheustorres.eadhub.authuser.dtos.ResponsePageDto;
@@ -20,7 +18,4 @@ public interface CourseClient {
     ResponsePageDto<CourseDTO> getAllCoursesByUser(
             @RequestParam("userId") UUID userId,
             @SpringQueryMap Pageable pageable);
-
-    @DeleteMapping("/courses/users/{userId}")
-    void deleteUserInCourse(@PathVariable("userId") UUID userId);
 }

@@ -79,14 +79,6 @@ public class User extends RepresentationModel<User> {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime lastUpdateDate;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private Set<UserCourse> usersCourses;
-
-    public UserCourse convertToUserCourse(UUID courseId) {
-        return new UserCourse(null, this, courseId);
-    }
-
     public void updateInfo(String fullName, String phoneNumber, String cpf) {
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;

@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.matheustorres.eadhub.course.domain.models.Course;
 import com.matheustorres.eadhub.course.dtos.CourseDTO;
 import com.matheustorres.eadhub.course.services.CourseService;
-import com.matheustorres.eadhub.course.specifications.SpecificationTemplate;
+import com.matheustorres.eadhub.course.specifications.CourseSpec;
 import com.matheustorres.eadhub.course.validation.CourseValidator;
 
 import jakarta.validation.Valid;
@@ -72,15 +72,10 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Course>> getAllCourses(SpecificationTemplate.CourseSpec spec,
+    public ResponseEntity<Page<Course>> getAllCourses(CourseSpec.CourseSpecification spec,
             @PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
             @RequestParam(required = false) UUID userId) {
-        Page<Course> coursePage = null;
-        if (userId != null) {
-            coursePage = courseService.findAll(SpecificationTemplate.courseUserId(userId).and(spec), pageable);
-        } else {
-            coursePage = courseService.findAll(spec, pageable);
-        }
+        Page<Course> coursePage = courseService.findAll(spec, pageable);
         if (!coursePage.isEmpty()) {
             for (Course course : coursePage) {
                 course.add(linkTo(methodOn(CourseController.class).getOneCourse(course.getCourseId())).withSelfRel());
