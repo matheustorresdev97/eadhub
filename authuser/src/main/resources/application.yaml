@@ -31,6 +31,11 @@ spring:
     username: admin
     password: 123456
 
+eadhub:
+  broker:
+    exchange:
+      userEvent: eadhub.userevent
+
 management:
   endpoints:
     web:

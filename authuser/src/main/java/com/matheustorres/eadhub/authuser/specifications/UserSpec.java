@@ -1,5 +1,5 @@
 package com.matheustorres.eadhub.authuser.specifications;
-
+import java.util.UUID;
 
 import org.springframework.data.jpa.domain.Specification;
 import com.matheustorres.eadhub.authuser.domain.models.User;
@@ -17,11 +17,12 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 
 public interface UserSpec extends Specification<User> {
 
-    // public static Specification<User> userCourseId(final UUID courseId) {
+     public static Specification<User> userCourseId(final UUID courseId) {
     // return (root, query, cb) -> {
     // query.distinct(true);
     // Join<User, UserCourse> userProd = root.join("usersCourses");
     // return cb.equal(userProd.get("courseId"), courseId);
     // };
-    // }
+            return null;
+     }
 }

@@ -21,6 +21,8 @@ import com.matheustorres.eadhub.authuser.dtos.UserDTO;
 import com.matheustorres.eadhub.authuser.mappers.UserMapper;
 import com.matheustorres.eadhub.authuser.repositories.UserRepository;
 import com.matheustorres.eadhub.authuser.services.UserService;
+import com.matheustorres.eadhub.authuser.publishers.UserEventPublisher;
+import com.matheustorres.eadhub.authuser.domain.enums.ActionType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +37,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final UserEventPublisher userEventPublisher;
 
     @Override
     public Page<User> findAll(Specification<User> spec, Pageable pageable) {
@@ -51,6 +54,7 @@ public class UserServiceImpl implements UserService {
     public void delete(User user) {
         log.info("UserServiceImpl::delete - Deletando usuário userId {}", user.getUserId());
         userRepository.delete(user);
+        userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.DELETE));
     }
 
     @Override
@@ -87,7 +91,9 @@ public class UserServiceImpl implements UserService {
                 .lastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")))
                 .build();
 
-        return userRepository.save(user);
+        user = userRepository.save(user);
+        userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.CREATE));
+        return user;
     }
 
     @Override
@@ -96,7 +102,9 @@ public class UserServiceImpl implements UserService {
         User user = findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
         user.updateInfo(userDto.fullName(), userDto.phoneNumber(), userDto.cpf());
-        return userRepository.save(user);
+        user = userRepository.save(user);
+        userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.UPDATE));
+        return user;
     }
 
     @Override
@@ -118,7 +126,9 @@ public class UserServiceImpl implements UserService {
         User user = findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
         user.updateImage(userDto.imageUrl());
-        return userRepository.save(user);
+        user = userRepository.save(user);
+        userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.UPDATE));
+        return user;
     }
 
     @Override
@@ -126,6 +136,8 @@ public class UserServiceImpl implements UserService {
         log.info("UserServiceImpl::registerInstructor - Registrando usuário como instrutor userId {}",
                 user.getUserId());
         user.updateInstructor();
-        return userRepository.save(user);
+        user = userRepository.save(user);
+        userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.UPDATE));
+        return user;
     }
 }
