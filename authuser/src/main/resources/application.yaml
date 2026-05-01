@@ -20,6 +20,9 @@ spring:
       hibernate:
         format_sql: true
   cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
     consul:
       host: localhost
       port: 8500
@@ -44,3 +47,15 @@ management:
   endpoint:
     health:
       show-details: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      circuitBreakerInstance:
+        slidingWindowSize: 30
+        permittedNumberOfCallsInHalfOpenState: 2
+        slidingWindowType: TIME_BASED
+        minimumNumberOfCalls: 2
+        waitDurationInOpenState: 30s
+        failureRateThreshold: 80
+        eventConsumerBufferSize: 10

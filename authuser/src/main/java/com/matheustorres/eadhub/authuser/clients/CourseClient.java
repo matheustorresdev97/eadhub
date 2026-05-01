@@ -2,6 +2,7 @@ package com.matheustorres.eadhub.authuser.clients;
 
 import java.util.UUID;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import com.matheustorres.eadhub.authuser.dtos.CourseDTO;
 @FeignClient(name = "eadhub-course")
 public interface CourseClient {
 
+    @CircuitBreaker(name = "circuitBreakerInstance")
     @GetMapping("/courses")
     ResponsePageDto<CourseDTO> getAllCoursesByUser(
             @RequestParam("userId") UUID userId,
