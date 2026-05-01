@@ -26,13 +26,8 @@ public class UserConsumer {
         var user = userMapper.toEntity(userEventDto);
 
         switch (actionType) {
-            case CREATE:
-            case UPDATE:
-                userService.save(user);
-                break;
-            case DELETE:
-                userService.delete(user.getUserId());
-                break;
+            case CREATE, UPDATE -> userService.save(user);
+            case DELETE -> userService.delete(user.getUserId());
         }
     }
 }
