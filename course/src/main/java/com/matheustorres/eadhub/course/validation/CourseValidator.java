@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import com.matheustorres.eadhub.course.clients.AuthUserClient;
 import com.matheustorres.eadhub.course.dtos.CourseDTO;
 
 @Component
@@ -15,7 +14,7 @@ public class CourseValidator implements Validator {
 
     private final Validator validator;
 
-    public CourseValidator(@Qualifier("defaultValidator") Validator validator, AuthUserClient authUserClient) {
+    public CourseValidator(@Qualifier("defaultValidator") Validator validator) {
         this.validator = validator;
     }
 

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.matheustorres.eadhub.course.clients.AuthUserClient;
 import com.matheustorres.eadhub.course.domain.models.Course;
 import com.matheustorres.eadhub.course.domain.models.User;
 import com.matheustorres.eadhub.course.domain.models.Lesson;

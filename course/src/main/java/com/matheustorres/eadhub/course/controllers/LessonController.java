@@ -30,7 +30,7 @@ import com.matheustorres.eadhub.course.dtos.LessonDTO;
 import com.matheustorres.eadhub.course.mappers.LessonMapper;
 import com.matheustorres.eadhub.course.services.LessonService;
 import com.matheustorres.eadhub.course.services.ModuleService;
-import com.matheustorres.eadhub.course.specifications.SpecificationTemplate;
+import com.matheustorres.eadhub.course.specifications.CourseSpec;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -82,9 +82,9 @@ public class LessonController {
 
     @GetMapping
     public ResponseEntity<Page<Lesson>> getAllLessons(@PathVariable(value = "moduleId") UUID moduleId,
-                                                     SpecificationTemplate.LessonSpec spec,
+                                                     CourseSpec.LessonSpec spec,
                                                      @PageableDefault(page = 0, size = 10, sort = "lessonId", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<Lesson> lessonPage = lessonService.findAllByModule(SpecificationTemplate.lessonModuleId(moduleId).and(spec), pageable);
+        Page<Lesson> lessonPage = lessonService.findAllByModule(CourseSpec.lessonModuleId(moduleId).and(spec), pageable);
         if (!lessonPage.isEmpty()) {
             for (Lesson lesson : lessonPage) {
                 lesson.add(linkTo(methodOn(LessonController.class).getLessonById(moduleId, lesson.getLessonId())).withSelfRel());
