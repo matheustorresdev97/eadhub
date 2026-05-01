@@ -23,7 +23,6 @@ import com.matheustorres.eadhub.course.dtos.SubscriptionDTO;
 import com.matheustorres.eadhub.course.services.CourseService;
 import com.matheustorres.eadhub.course.services.UserService;
 import com.matheustorres.eadhub.course.specifications.UserSpec;
-import org.springframework.data.domain.Pageable;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
