@@ -1,0 +1,26 @@
+spring:
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always

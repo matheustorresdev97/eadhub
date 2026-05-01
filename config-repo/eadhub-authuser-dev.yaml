@@ -1,0 +1,42 @@
+server:
+  port: 8087
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eadhub-authuser
+    username: postgres
+    password: postgres
+  cloud:
+    consul:
+      discovery:
+        service-name: eadhub-authuser
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
+eadhub:
+  broker:
+    exchange:
+      userEvent: eadhub.userevent
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, refresh # Sobrescreve o global para incluir o refresh
+
+authuser:
+  refreshscope:
+    name: "Matheus Torres - Valor Inicial"
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      circuitBreakerInstance:
+        slidingWindowSize: 30
+        permittedNumberOfCallsInHalfOpenState: 2
+        slidingWindowType: TIME_BASED
+        minimumNumberOfCalls: 2
+        waitDurationInOpenState: 30s
+        failureRateThreshold: 80
+        eventConsumerBufferSize: 10

@@ -1,49 +1,7 @@
-server:
-  port: 8082
-
 spring:
-  output:
-    ansi:
-      enabled: ALWAYS
   application:
     name: eadhub-course
-  datasource:
-    url: jdbc:postgresql://localhost:5432/eadhub-course
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-  cloud:
-    consul:
-      host: localhost
-      port: 8500
-      discovery:
-        service-name: ${spring.application.name}
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: admin
-    password: 123456
-
-eadhub:
-  broker:
-    queue:
-      userEvent: eadhub.userevent.course
-    exchange:
-      userEvent: eadhub.userevent
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health
-  endpoint:
-    health:
-      show-details: always
-
+  profiles:
+    active: dev
+  config:
+    import: "optional:configserver:http://localhost:8888"

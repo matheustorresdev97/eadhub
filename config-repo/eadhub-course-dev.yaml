@@ -1,0 +1,19 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eadhub-course
+    username: postgres
+    password: postgres
+  cloud:
+    consul:
+      discovery:
+        service-name: eadhub-course
+
+eadhub:
+  broker:
+    queue:
+      userEvent: eadhub.userevent.course
+    exchange:
+      userEvent: eadhub.userevent
