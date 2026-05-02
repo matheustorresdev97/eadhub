@@ -1,0 +1,17 @@
+server:
+  port: 8085
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eadhub-notification
+    username: postgres
+    password: postgres
+  cloud:
+    consul:
+      discovery:
+        service-name: eadhub-notification
+
+eadhub:
+  broker:
+    queue:
+      notificationCommand: eadhub.notificationcommand

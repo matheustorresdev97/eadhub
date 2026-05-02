@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: eadhub-api-gateway
+  profiles:
+    active: dev
+  config:
+    import: "optional:configserver:http://localhost:8888"
   cloud:
     consul:
       host: localhost
@@ -23,6 +27,11 @@ spring:
               uri: lb://eadhub-course
               predicates:
                 - Path=/courses/**, /modules/**
+
+            - id: eadhub-notification
+              uri: lb://eadhub-notification
+              predicates:
+                - Path=/notifications/**
 
 management:
   endpoints:
