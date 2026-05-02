@@ -20,14 +20,17 @@ import com.matheustorres.eadhub.course.domain.models.Lesson;
 import com.matheustorres.eadhub.course.domain.models.Module;
 import com.matheustorres.eadhub.course.dtos.CourseDTO;
 import com.matheustorres.eadhub.course.mappers.CourseMapper;
+import com.matheustorres.eadhub.course.mappers.NotificationMapper;
+import com.matheustorres.eadhub.course.publishers.NotificationCommandPublisher;
 import com.matheustorres.eadhub.course.repositories.CourseRepository;
 import com.matheustorres.eadhub.course.repositories.LessonRepository;
 import com.matheustorres.eadhub.course.repositories.ModuleRepository;
-import com.matheustorres.eadhub.course.repositories.UserRepository;
 import com.matheustorres.eadhub.course.services.CourseService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
@@ -35,8 +38,9 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
     private final ModuleRepository moduleRepository;
     private final LessonRepository lessonRepository;
-    private final UserRepository userRepository;
     private final CourseMapper courseMapper;
+    private final NotificationMapper notificationMapper;
+    private final NotificationCommandPublisher notificationCommandPublisher;
 
     @Override
     public boolean existsByCourseId(UUID courseId) {
@@ -97,4 +101,17 @@ public class CourseServiceImpl implements CourseService {
     public void saveSubscriptionUserInCourse(UUID courseId, UUID userId) {
         courseRepository.saveCourseUser(courseId, userId);
     }
-}
+
+    @Transactional
+    @Override
+    public void saveAndSubscriptionUserInCourseAndSendNotification(Course course, User user){
+        courseRepository.saveCourseUser(course.getCourseId(), user.getUserId());
+        try {
+            var notificationCommandDto = notificationMapper.toNotificationCommandDTO(course, user);
+            notificationCommandPublisher.publishNotificationCommand(notificationCommandDto);
+        } catch (Exception e){
+            log.warn("Error sending notification!");
+        }
+    }
+
+}   

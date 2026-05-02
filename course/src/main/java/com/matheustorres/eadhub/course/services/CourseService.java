@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.matheustorres.eadhub.course.domain.models.Course;
+import com.matheustorres.eadhub.course.domain.models.User;
 import com.matheustorres.eadhub.course.dtos.CourseDTO;
 
 public interface CourseService {
@@ -26,4 +27,6 @@ public interface CourseService {
     boolean existsByCourseAndUser(UUID courseId, UUID userId);
 
     void saveSubscriptionUserInCourse(UUID courseId, UUID userId);
+
+    void saveAndSubscriptionUserInCourseAndSendNotification(Course course, User user);
 }

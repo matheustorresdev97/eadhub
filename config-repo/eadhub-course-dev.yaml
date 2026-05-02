@@ -15,5 +15,6 @@ eadhub:
   broker:
     queue:
       userEvent: eadhub.userevent.course
+      notificationCommand: eadhub.notificationcommand
     exchange:
       userEvent: eadhub.userevent

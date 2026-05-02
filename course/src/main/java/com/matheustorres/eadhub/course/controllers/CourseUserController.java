@@ -47,13 +47,14 @@ public class CourseUserController {
         if (!courseService.existsByCourseId(courseId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(userService.findAll(UserSpec.userCourseId(courseId).and(spec), pageable));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.findAll(UserSpec.userCourseId(courseId).and(spec), pageable));
     }
 
     @PostMapping("/{courseId}/users/subscription")
     public ResponseEntity<Object> saveSubscriptionUserInCourse(@PathVariable(value = "courseId") UUID courseId,
             @RequestBody @Valid SubscriptionDTO subscriptionDTO) {
-        
+
         Optional<Course> courseOptional = courseService.findById(courseId);
         if (courseOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.");
@@ -63,17 +64,16 @@ public class CourseUserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: subscription already exists!");
         }
 
-        Optional<User> userModelOptional = userService.findById(subscriptionDTO.userId());
-        if (userModelOptional.isEmpty()) {
+        Optional<User> userOptional = userService.findById(subscriptionDTO.userId());
+        if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
         }
 
-        if (userModelOptional.get().getUserStatus().equals(UserStatus.BLOCKED.name())) {
+        if (userOptional.get().getUserStatus().equals(UserStatus.BLOCKED.name())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User is blocked.");
         }
 
-        courseService.saveSubscriptionUserInCourse(courseOptional.get().getCourseId(), userModelOptional.get().getUserId());
-        
+        courseService.saveAndSubscriptionUserInCourseAndSendNotification(courseOptional.get(), userOptional.get());
         return ResponseEntity.status(HttpStatus.CREATED).body("Subscription created successfully.");
     }
 }
