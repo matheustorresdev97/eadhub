@@ -144,10 +144,14 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Transactional
     @Override
     public User registerInstructor(User user) {
         log.info("UserServiceImpl::registerInstructor - Registrando usuário como instrutor userId {}",
                 user.getUserId());
+        Role role = roleService.findByRoleName(RoleType.ROLE_INSTRUCTOR)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Error: Role is not found."));
+        user.getRoles().add(role);
         user.updateInstructor();
         user = userRepository.save(user);
         userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.UPDATE));

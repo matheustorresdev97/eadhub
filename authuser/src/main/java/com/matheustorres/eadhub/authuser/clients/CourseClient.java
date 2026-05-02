@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.matheustorres.eadhub.authuser.dtos.ResponsePageDto;
 import com.matheustorres.eadhub.authuser.dtos.CourseDTO;
 
+import org.springframework.web.bind.annotation.RequestHeader;
+
 @FeignClient(name = "eadhub-course")
 public interface CourseClient {
 
@@ -19,5 +21,6 @@ public interface CourseClient {
     @GetMapping("/courses")
     ResponsePageDto<CourseDTO> getAllCoursesByUser(
             @RequestParam("userId") UUID userId,
-            @SpringQueryMap Pageable pageable);
+            @SpringQueryMap Pageable pageable,
+            @RequestHeader("Authorization") String token);
 }

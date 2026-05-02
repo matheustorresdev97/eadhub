@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,9 +28,9 @@ public class InstructorController {
 
     private final UserService userService;
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/subscription")
-    public ResponseEntity<Object> saveSubscriptionInstructor(@RequestBody @Valid InstructorDTO
-            instructorDTO) {
+    public ResponseEntity<Object> saveSubscriptionInstructor(@RequestBody @Valid InstructorDTO instructorDTO) {
         log.debug("POST saveSubscriptionInstructor instructorDTO received {}", instructorDTO.toString());
         Optional<User> userOptional = userService.findById(instructorDTO.userId());
         if (!userOptional.isPresent()) {
@@ -38,9 +39,10 @@ public class InstructorController {
         }
 
         User user = userService.registerInstructor(userOptional.get());
+
         log.debug("POST saveSubscriptionInstructor user saved {}", user.toString());
         log.info("User successfully subscribed to instructor userId {}", user.getUserId());
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
-    
+
 }
