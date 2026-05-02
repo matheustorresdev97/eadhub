@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.matheustorres.eadhub.authuser.domain.enums.UserStatus;
@@ -24,6 +26,9 @@ import com.matheustorres.eadhub.authuser.repositories.UserRepository;
 import com.matheustorres.eadhub.authuser.services.UserService;
 import com.matheustorres.eadhub.authuser.publishers.UserEventPublisher;
 import com.matheustorres.eadhub.authuser.domain.enums.ActionType;
+import com.matheustorres.eadhub.authuser.domain.enums.RoleType;
+import com.matheustorres.eadhub.authuser.domain.models.Role;
+import com.matheustorres.eadhub.authuser.services.RoleService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,6 +45,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserEventPublisher userEventPublisher;
     private final PasswordEncoder passwordEncoder;
+    private final RoleService roleService;
 
     @Override
     public Page<User> findAll(Specification<User> spec, Pageable pageable) {
@@ -86,6 +92,9 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Error: Email is already taken!");
         }
 
+        Role role = roleService.findByRoleName(RoleType.ROLE_STUDENT)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Error: Role is not found."));
+
         User user = userMapper.toEntityBuilder(userDto)
                 .password(passwordEncoder.encode(userDto.password()))
                 .userStatus(UserStatus.ACTIVE)
@@ -93,6 +102,7 @@ public class UserServiceImpl implements UserService {
                 .creationDate(LocalDateTime.now(ZoneId.of("UTC")))
                 .lastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")))
                 .build();
+        user.getRoles().add(role);
 
         user = userRepository.save(user);
         userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.CREATE));
@@ -142,5 +152,11 @@ public class UserServiceImpl implements UserService {
         user = userRepository.save(user);
         userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.UPDATE));
         return user;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
     }
 }

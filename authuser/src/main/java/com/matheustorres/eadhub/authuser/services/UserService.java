@@ -7,10 +7,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import org.springframework.security.core.userdetails.UserDetailsService;
+
 import com.matheustorres.eadhub.authuser.domain.models.User;
 import com.matheustorres.eadhub.authuser.dtos.UserDTO;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
 
     Page<User> findAll(Specification<User> spec, Pageable pageable);
 
