@@ -12,7 +12,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import com.matheustorres.eadhub.authuser.domain.models.User;
 import com.matheustorres.eadhub.authuser.dtos.UserDTO;
 
+import org.springframework.security.core.userdetails.UserDetails;
+
 public interface UserService extends UserDetailsService {
+
+    UserDetails loadUserByUserId(UUID userId);
 
     Page<User> findAll(Specification<User> spec, Pageable pageable);
 

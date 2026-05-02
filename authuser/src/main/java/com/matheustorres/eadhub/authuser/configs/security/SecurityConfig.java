@@ -17,11 +17,23 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+
 @Configuration
 @EnableMethodSecurity
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+                .role("ADMIN").implies("INSTRUCTOR")
+                .role("INSTRUCTOR").implies("STUDENT")
+                .role("STUDENT").implies("USER")
+                .build();
+    }
 
     private final AuthenticationEntryPointImpl authenticationEntryPoint;
 

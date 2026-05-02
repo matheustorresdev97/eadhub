@@ -15,6 +15,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.stream.Collectors;
+import org.springframework.security.core.GrantedAuthority;
+
 @Log4j2
 @Component
 public class JwtProvider {
@@ -27,16 +30,20 @@ public class JwtProvider {
 
     public String generateJwt(Authentication authentication) {
         User userPrincipal = (User) authentication.getPrincipal();
+        String roles = userPrincipal.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
 
         return Jwts.builder()
-                .subject(userPrincipal.getUsername())
+                .subject(userPrincipal.getUserId().toString())
+                .claim("roles", roles)
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public String getUsernameFromJwt(String token) {
+    public String getUserIdFromJwt(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
