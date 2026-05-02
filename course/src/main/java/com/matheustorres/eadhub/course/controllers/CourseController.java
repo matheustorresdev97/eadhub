@@ -36,6 +36,10 @@ import com.matheustorres.eadhub.course.validation.CourseValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import com.matheustorres.eadhub.course.configs.security.AuthenticationCurrentUserService;
+
 @RestController
 @RequestMapping("/courses")
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -45,7 +49,9 @@ public class CourseController {
     private final CourseService courseService;
     private final CourseValidator courseValidator;
     private final UserService userService;
+    private final AuthenticationCurrentUserService authenticationCurrentUserService;
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping
     public ResponseEntity<Object> saveCourse(@RequestBody @Valid CourseDTO courseDTO, Errors errors) {
         courseValidator.validate(courseDTO, errors);
@@ -55,16 +61,19 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.save(courseDTO));
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @DeleteMapping("/{courseId}")
     public ResponseEntity<Object> deleteCourse(@PathVariable(value = "courseId") UUID courseId) {
         Optional<Course> courseOptional = courseService.findById(courseId);
         if (courseOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
         }
+        validateInstructorAccess(courseOptional.get().getUserInstructor());
         courseService.delete(courseOptional.get());
         return ResponseEntity.status(HttpStatus.OK).body("Course deleted successfully.");
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping("/{courseId}")
     public ResponseEntity<Object> updateCourse(@PathVariable(value = "courseId") UUID courseId,
             @RequestBody @Valid CourseDTO courseDto) {
@@ -72,9 +81,11 @@ public class CourseController {
         if (courseOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
         }
+        validateInstructorAccess(courseOptional.get().getUserInstructor());
         return ResponseEntity.status(HttpStatus.OK).body(courseService.update(courseId, courseDto));
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     public ResponseEntity<Page<Course>> getAllCourses(CourseSpec spec,
             @PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
@@ -92,6 +103,7 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.OK).body(coursePage);
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/{courseId}")
     public ResponseEntity<Object> getOneCourse(@PathVariable(value = "courseId") UUID courseId) {
         Optional<Course> courseOptional = courseService.findById(courseId);
@@ -100,5 +112,12 @@ public class CourseController {
         }
         courseOptional.get().add(linkTo(methodOn(CourseController.class).getOneCourse(courseId)).withSelfRel());
         return ResponseEntity.status(HttpStatus.OK).body(courseOptional.get());
+    }
+
+    private void validateInstructorAccess(UUID instructorId) {
+        UUID currentUserId = authenticationCurrentUserService.getCurrentUser().getUserId();
+        if (!currentUserId.equals(instructorId) && !authenticationCurrentUserService.getAuthentication().getAuthorities().toString().contains("ROLE_ADMIN")) {
+            throw new AccessDeniedException("Forbidden");
+        }
     }
 }
