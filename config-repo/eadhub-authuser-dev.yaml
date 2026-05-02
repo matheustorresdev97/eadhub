@@ -18,6 +18,9 @@ eadhub:
   broker:
     exchange:
       userEvent: eadhub.userevent
+  auth:
+    jwtSecret: dGhpcy1pcy1hLXZlcnktbG9uZy1zZWNyZXQta2V5LWZvci1qd3QtYXV0aGVudGljYXRpb24taW4tZWFkaHViLXByb2plY3Q=
+    jwtExpirationMs: 3600000
 
 management:
   endpoints:
