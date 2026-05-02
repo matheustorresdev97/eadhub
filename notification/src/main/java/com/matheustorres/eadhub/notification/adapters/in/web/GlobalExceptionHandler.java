@@ -1,4 +1,4 @@
-package com.matheustorres.eadhub.notification.controllers;
+package com.matheustorres.eadhub.notification.adapters.in.web;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

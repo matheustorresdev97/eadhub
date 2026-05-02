@@ -1,12 +1,9 @@
-package com.matheustorres.eadhub.notification.domain.models;
+package com.matheustorres.eadhub.notification.adapters.out.persistence;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.hateoas.RepresentationModel;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.matheustorres.eadhub.notification.domain.enums.NotificationStatus;
+import com.matheustorres.eadhub.notification.core.domain.NotificationStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,16 +15,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "tb_notifications")
-public class Notification extends RepresentationModel<Notification> {
+public class NotificationJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -43,15 +40,10 @@ public class Notification extends RepresentationModel<Notification> {
     private String message;
 
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime creationDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationStatus notificationStatus;
-
-    public void setNotificationStatus(NotificationStatus notificationStatus) {
-        this.notificationStatus = notificationStatus;
-    }
 
 }

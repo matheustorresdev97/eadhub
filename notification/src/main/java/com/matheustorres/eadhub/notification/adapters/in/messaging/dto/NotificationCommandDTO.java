@@ -1,4 +1,4 @@
-package com.matheustorres.eadhub.notification.dtos;
+package com.matheustorres.eadhub.notification.adapters.in.messaging.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
