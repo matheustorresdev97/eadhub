@@ -9,6 +9,9 @@ spring:
   config:
     import: "optional:configserver:http://localhost:8888"
   cloud:
+    config:
+      username: eadhub
+      password: eadhub123
     consul:
       host: localhost
       port: 8500

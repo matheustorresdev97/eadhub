@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.matheustorres.eadhub.authuser.domain.enums.UserStatus;
 import com.matheustorres.eadhub.authuser.domain.enums.UserType;
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final UserEventPublisher userEventPublisher;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Page<User> findAll(Specification<User> spec, Pageable pageable) {
@@ -85,6 +87,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userMapper.toEntityBuilder(userDto)
+                .password(passwordEncoder.encode(userDto.password()))
                 .userStatus(UserStatus.ACTIVE)
                 .userType(UserType.STUDENT)
                 .creationDate(LocalDateTime.now(ZoneId.of("UTC")))
@@ -112,11 +115,11 @@ public class UserServiceImpl implements UserService {
         log.info("UserServiceImpl::updatePassword - Atualizando senha userId {}", userId);
         User user = findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
-        if (!user.getPassword().equals(userDto.oldPassword())) {
+        if (!passwordEncoder.matches(userDto.oldPassword(), user.getPassword())) {
             log.warn("Mismatched old password userId {}", userId);
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Error: Mismatched old password!");
         }
-        user.updatePassword(userDto.password());
+        user.updatePassword(passwordEncoder.encode(userDto.password()));
         userRepository.save(user);
     }
 

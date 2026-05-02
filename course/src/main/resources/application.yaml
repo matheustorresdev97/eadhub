@@ -3,5 +3,9 @@ spring:
     name: eadhub-course
   profiles:
     active: dev
+  cloud:
+    config:
+      username: eadhub
+      password: eadhub123
   config:
     import: "optional:configserver:http://localhost:8888"

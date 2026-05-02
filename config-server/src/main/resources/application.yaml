@@ -6,6 +6,10 @@ spring:
     name: eadhub-config-server
   profiles:
     active: native
+  security:
+    user:
+      name: eadhub
+      password: eadhub123
   cloud:
     config:
       server:
