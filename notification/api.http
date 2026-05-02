@@ -1,0 +1,19 @@
+@baseUrl = http://localhost:8080
+@userId = 7a26f2f7-2d21-4c56-954f-56449b8998e0
+@notificationId = 00000000-0000-0000-0000-000000000000
+
+### ================================================================
+###                1. USER NOTIFICATION CONTROLLER
+### ================================================================
+
+### 1.1 Buscar todas as notificações de um usuário
+GET {{baseUrl}}/users/{{userId}}/notifications?page=0&size=10&sort=notificationId,asc
+Accept: application/json
+
+### 1.2 Atualizar status de uma notificação
+PUT {{baseUrl}}/users/{{userId}}/notifications/{{notificationId}}
+Content-Type: application/json
+
+{
+  "notificationStatus": "READ"
+}

@@ -18,6 +18,11 @@ spring:
       server:
         webmvc:
           routes:
+            - id: eadhub-notification
+              uri: lb://eadhub-notification
+              predicates:
+                - Path=/users/*/notifications/**
+
             - id: eadhub-authuser
               uri: lb://eadhub-authuser
               predicates:
@@ -27,11 +32,6 @@ spring:
               uri: lb://eadhub-course
               predicates:
                 - Path=/courses/**, /modules/**
-
-            - id: eadhub-notification
-              uri: lb://eadhub-notification
-              predicates:
-                - Path=/notifications/**
 
 management:
   endpoints:

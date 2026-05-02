@@ -3,6 +3,8 @@ package com.matheustorres.eadhub.notification.domain.models;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.matheustorres.eadhub.notification.domain.enums.NotificationStatus;
 
@@ -25,10 +27,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "tb_notifications")
-public class Notification {
+public class Notification extends RepresentationModel<Notification> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID notificationId;
 
     @Column(nullable = false)
@@ -47,4 +49,9 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationStatus notificationStatus;
+
+    public void setNotificationStatus(NotificationStatus notificationStatus) {
+        this.notificationStatus = notificationStatus;
+    }
+
 }
