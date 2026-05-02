@@ -3,6 +3,9 @@ package com.matheustorres.eadhub.notification.configs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -23,6 +26,19 @@ public class RabbitMQConfig {
     @Bean
     public Queue queueNotificationCommand() {
         return new Queue(queueNotificationCommand, true);
+    }
+
+    @Value(value = "${eadhub.broker.exchange.userEvent}")
+    private String exchangeUserEvent;
+
+    @Bean
+    public FanoutExchange fanoutUserEvent() {
+        return new FanoutExchange(exchangeUserEvent);
+    }
+
+    @Bean
+    public Binding bindingUserEvent() {
+        return BindingBuilder.bind(queueNotificationCommand()).to(fanoutUserEvent());
     }
 
     @Bean

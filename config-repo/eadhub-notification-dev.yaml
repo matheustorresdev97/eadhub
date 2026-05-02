@@ -13,5 +13,7 @@ spring:
 
 eadhub:
   broker:
+    exchange:
+      userEvent: eadhub.userevent
     queue:
       notificationCommand: eadhub.notificationcommand
