@@ -1,0 +1,23 @@
+server:
+  port: 8085
+
+spring:
+  datasource:
+    url: ${DB_NOTIFICATION_URL}
+    username: ${DB_NOTIFICATION_USERNAME}
+    password: ${DB_NOTIFICATION_PASSWORD}
+  cloud:
+    consul:
+      discovery:
+        service-name: eadhub-notification
+
+eadhub:
+  broker:
+    exchange:
+      userEvent: eadhub.userevent
+    queue:
+      notificationCommand: eadhub.notificationcommand
+
+logging:
+  level:
+    com.matheustorres.eadhub: INFO

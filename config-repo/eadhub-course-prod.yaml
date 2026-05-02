@@ -1,0 +1,21 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: ${DB_COURSE_URL}
+    username: ${DB_COURSE_USERNAME}
+    password: ${DB_COURSE_PASSWORD}
+  cloud:
+    consul:
+      discovery:
+        service-name: eadhub-course
+
+eadhub:
+  broker:
+    exchange:
+      userEvent: eadhub.userevent
+
+logging:
+  level:
+    com.matheustorres.eadhub: INFO

@@ -1,0 +1,22 @@
+server:
+  port: 8087
+
+spring:
+  datasource:
+    url: ${DB_AUTHUSER_URL}
+    username: ${DB_AUTHUSER_USERNAME}
+    password: ${DB_AUTHUSER_PASSWORD}
+  cloud:
+    consul:
+      discovery:
+        service-name: eadhub-authuser
+
+eadhub:
+  broker:
+    exchange:
+      userEvent: eadhub.userevent
+
+logging:
+  level:
+    com.matheustorres.eadhub: INFO
+    org.springframework.security: INFO
