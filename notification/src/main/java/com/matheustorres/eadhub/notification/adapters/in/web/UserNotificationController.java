@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -35,7 +34,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class UserNotificationController {
 
     private final FindNotificationsUseCase findNotificationsUseCase;

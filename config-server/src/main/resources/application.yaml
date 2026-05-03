@@ -14,7 +14,7 @@ spring:
     config:
       server:
         native:
-          search-locations: file:///home/matheus/Área de trabalho/eadhub/config-repo
+          search-locations: file:./config-repo,file:./../config-repo
     consul:
       host: localhost
       port: 8500

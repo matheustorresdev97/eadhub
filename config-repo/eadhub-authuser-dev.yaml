@@ -6,6 +6,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/eadhub-authuser
     username: postgres
     password: postgres
+  sql:
+    init:
+      mode: always
+  jpa:
+    defer-datasource-initialization: true
   cloud:
     consul:
       discovery:

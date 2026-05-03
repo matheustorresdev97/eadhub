@@ -89,6 +89,7 @@ public class User extends RepresentationModel<User> implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tb_users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @Builder.Default
     private Set<Role> roles = new HashSet<>();
 
     public void updateInfo(String fullName, String phoneNumber, String cpf) {
