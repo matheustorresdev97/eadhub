@@ -1,0 +1,27 @@
+@baseUrl = http://localhost:8080
+@userId = 7a26f2f7-2d21-4c56-954f-56449b8998e0
+
+### ================================================================
+###                    1. PAYMENT CONTROLLER
+### ================================================================
+
+### 1.1 Solicitar um novo pagamento (Request Payment)
+POST {{baseUrl}}/users/{{userId}}/payments
+Content-Type: application/json
+
+{
+  "valuePaid": 150.00,
+  "cardHolderName": "MATHEUS TORRES",
+  "cardNumber": "1234567812345678",
+  "expirationDate": "12/28",
+  "cvv": "123",
+  "recurrence": false
+}
+
+### 1.2 Listar todos os pagamentos de um usuário (getAllPayments)
+GET {{baseUrl}}/users/{{userId}}/payments?page=0&size=10&sort=paymentRequestDate,desc
+Accept: application/json
+
+### 1.3 Listar pagamentos com filtros (Specification)
+GET {{baseUrl}}/users/{{userId}}/payments?paymentControl=EFFECTED
+Accept: application/json
