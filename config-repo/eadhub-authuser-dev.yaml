@@ -18,6 +18,9 @@ eadhub:
   broker:
     exchange:
       userEvent: eadhub.userevent
+      paymentEventExchange: eadhub.paymentevent
+    queue:
+      paymentEventQueue: eadhub.paymentevent.authuser
 
 management:
   endpoints:

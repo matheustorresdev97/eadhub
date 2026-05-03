@@ -31,3 +31,15 @@ resilience4j:
         waitDurationInOpenState: 30s
         failureRateThreshold: 80
         eventConsumerBufferSize: 10
+
+eadhub:
+  broker:
+    exchange:
+      userEventExchange: eadhub.userevent
+      paymentEvent: eadhub.paymentevent
+      paymentCommandExchange: eadhub.paymentcommandexchange
+    queue:
+      userEventQueue: eadhub.userevent.payment
+      paymentCommandQueue: eadhub.paymentcommandqueue
+    key:
+      paymentCommandKey: eadhub.paymentcommandkey

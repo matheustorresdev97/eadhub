@@ -3,7 +3,6 @@ package com.matheustorres.eadhub.authuser.controllers;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.Sort;
 
 import com.matheustorres.eadhub.authuser.clients.CourseClient;
 import com.matheustorres.eadhub.authuser.domain.models.User;
-import com.matheustorres.eadhub.authuser.dtos.CourseDTO;
 import com.matheustorres.eadhub.authuser.services.UserService;
 
 import lombok.RequiredArgsConstructor;

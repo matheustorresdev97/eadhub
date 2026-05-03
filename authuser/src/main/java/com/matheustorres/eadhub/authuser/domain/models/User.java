@@ -113,6 +113,11 @@ public class User extends RepresentationModel<User> implements UserDetails {
         this.lastUpdateDate = LocalDateTime.now(java.time.ZoneId.of("UTC"));
     }
 
+    public void updateUserType(UserType userType) {
+        this.userType = userType;
+        this.lastUpdateDate = LocalDateTime.now(java.time.ZoneId.of("UTC"));
+    }
+
     @Override
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String getPassword() {

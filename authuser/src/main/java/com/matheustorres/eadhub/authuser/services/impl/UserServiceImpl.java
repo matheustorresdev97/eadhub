@@ -17,6 +17,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.matheustorres.eadhub.authuser.dtos.PaymentEventDTO;
+import com.matheustorres.eadhub.authuser.domain.enums.PaymentControl;
 import com.matheustorres.eadhub.authuser.domain.enums.UserStatus;
 import com.matheustorres.eadhub.authuser.domain.enums.UserType;
 import com.matheustorres.eadhub.authuser.domain.models.User;
@@ -111,13 +113,13 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Error: Email is already taken!");
         }
 
-        Role role = roleService.findByRoleName(RoleType.ROLE_STUDENT)
+        Role role = roleService.findByRoleName(RoleType.ROLE_USER)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Error: Role is not found."));
 
         User user = userMapper.toEntityBuilder(userDto)
                 .password(passwordEncoder.encode(userDto.password()))
                 .userStatus(UserStatus.ACTIVE)
-                .userType(UserType.STUDENT)
+                .userType(UserType.USER)
                 .creationDate(LocalDateTime.now(ZoneId.of("UTC")))
                 .lastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")))
                 .build();
@@ -182,6 +184,44 @@ public class UserServiceImpl implements UserService {
         userElasticsearchRepository.save(toDocument(user));
         userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.UPDATE));
         return user;
+    }
+
+    @Transactional
+    @Override
+    public void updateAfterPayment(PaymentEventDTO paymentEventDTO) {
+        log.info("UserServiceImpl::updateAfterPayment - Processando evento de pagamento para userId {}", paymentEventDTO.userId());
+        Optional<User> userOptional = userRepository.findById(paymentEventDTO.userId());
+        if (userOptional.isPresent()) {
+            var user = userOptional.get();
+            Role studentRole = roleService.findByRoleName(RoleType.ROLE_STUDENT)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Error: Role is not found."));
+
+            var paymentControl = PaymentControl.valueOf(paymentEventDTO.paymentControl());
+
+            switch (paymentControl) {
+                case EFFECTED -> {
+                    if (user.getUserType().equals(UserType.USER)) {
+                        user.updateUserType(UserType.STUDENT);
+                        user.getRoles().add(studentRole);
+                        userRepository.save(user);
+                        userElasticsearchRepository.save(toDocument(user));
+                        userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.UPDATE));
+                        log.info("User {} upgraded to STUDENT", user.getUserId());
+                    }
+                }
+                case REFUSED -> {
+                    if (user.getUserType().equals(UserType.STUDENT)) {
+                        user.updateUserType(UserType.USER);
+                        user.getRoles().remove(studentRole);
+                        userRepository.save(user);
+                        userElasticsearchRepository.save(toDocument(user));
+                        userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.UPDATE));
+                        log.info("User {} downgraded to USER due to refused payment", user.getUserId());
+                    }
+                }
+                case ERROR -> log.error("Payment with ERROR for userId: {}", user.getUserId());
+            }
+        }
     }
 
     @Override

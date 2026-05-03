@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.matheustorres.eadhub.authuser.domain.models.User;
 import com.matheustorres.eadhub.authuser.dtos.UserDTO;
+import com.matheustorres.eadhub.authuser.dtos.PaymentEventDTO;
 import com.matheustorres.eadhub.authuser.documents.UserDocument;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,4 +43,6 @@ public interface UserService extends UserDetailsService {
     User updateImage(UUID userId, UserDTO userDto);
 
     User registerInstructor(User user);
+
+    void updateAfterPayment(PaymentEventDTO paymentEventDTO);
 }

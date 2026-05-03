@@ -15,3 +15,15 @@ logging:
   level:
     com.matheustorres.eadhub: INFO
     org.springframework.security: INFO
+
+eadhub:
+  broker:
+    exchange:
+      userEventExchange: eadhub.userevent
+      paymentEvent: eadhub.paymentevent
+      paymentCommandExchange: eadhub.paymentcommandexchange
+    queue:
+      userEventQueue: eadhub.userevent.payment
+      paymentCommandQueue: eadhub.paymentcommandqueue
+    key:
+      paymentCommandKey: eadhub.paymentcommandkey
