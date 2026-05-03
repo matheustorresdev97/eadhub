@@ -1,0 +1,17 @@
+server:
+  port: 8089
+
+spring:
+  datasource:
+    url: ${DB_PAYMENT_URL}
+    username: ${DB_PAYMENT_USERNAME}
+    password: ${DB_PAYMENT_PASSWORD}
+  cloud:
+    consul:
+      discovery:
+        service-name: eadhub-payment
+
+logging:
+  level:
+    com.matheustorres.eadhub: INFO
+    org.springframework.security: INFO
