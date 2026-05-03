@@ -73,6 +73,12 @@ services:
       elasticsearch:
         condition: service_healthy
 
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: eadhub-zipkin
+    ports:
+      - "9411:9411"
+
 
 
 volumes:
