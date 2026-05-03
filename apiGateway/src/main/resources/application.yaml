@@ -20,6 +20,13 @@ spring:
     gateway:
       server:
         webmvc:
+          cors:
+            cors-configurations:
+              '[/**]':
+                allowed-origins: "http://localhost:4200"
+                allowed-methods: "*"
+                allowed-headers: "*"
+                allow-credentials: true
           routes:
             - id: eadhub-notification
               uri: lb://eadhub-notification
