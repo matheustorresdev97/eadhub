@@ -8,6 +8,10 @@ spring:
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USERNAME:admin}
     password: ${RABBITMQ_PASSWORD:123456}
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URIS:http://localhost:9200}
+    socket-timeout: 60s
+    connection-timeout: 5s
   jpa:
     hibernate:
       ddl-auto: validate

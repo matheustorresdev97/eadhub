@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -30,6 +31,7 @@ import com.matheustorres.eadhub.authuser.domain.models.User;
 import com.matheustorres.eadhub.authuser.dtos.UserDTO;
 import com.matheustorres.eadhub.authuser.services.UserService;
 import com.matheustorres.eadhub.authuser.specifications.UserSpec;
+import com.matheustorres.eadhub.authuser.documents.UserDocument;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -48,13 +50,20 @@ public class UserController {
     @GetMapping
     public ResponseEntity<Page<User>> getAllUsers(UserSpec spec,
             @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) Pageable pageable) {
-        Page<User> userModelPage = userService.findAll(spec, pageable);
-        if (!userModelPage.isEmpty()) {
-            for (User user : userModelPage.toList()) {
+        Page<User> userPage = userService.findAll(spec, pageable);
+        if (!userPage.isEmpty()) {
+            for (User user : userPage.toList()) {
                 user.add(linkTo(methodOn(UserController.class).getUserById(user.getUserId())).withSelfRel());
             }
         }
-        return ResponseEntity.status(HttpStatus.OK).body(userModelPage);
+        return ResponseEntity.status(HttpStatus.OK).body(userPage);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/search")
+    public ResponseEntity<Page<UserDocument>> searchUsers(@RequestParam String q,
+                                                          @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.searchUser(q, pageable));
     }
 
     @PreAuthorize("hasAnyRole('STUDENT')")

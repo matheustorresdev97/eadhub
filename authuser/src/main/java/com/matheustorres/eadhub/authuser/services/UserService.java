@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.matheustorres.eadhub.authuser.domain.models.User;
 import com.matheustorres.eadhub.authuser.dtos.UserDTO;
+import com.matheustorres.eadhub.authuser.documents.UserDocument;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -19,6 +20,8 @@ public interface UserService extends UserDetailsService {
     UserDetails loadUserByUserId(UUID userId);
 
     Page<User> findAll(Specification<User> spec, Pageable pageable);
+
+    Page<UserDocument> searchUser(String query, Pageable pageable);
 
     Optional<User> findById(UUID userId);
 

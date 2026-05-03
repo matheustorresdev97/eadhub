@@ -36,6 +36,9 @@ import org.springframework.data.jpa.domain.Specification;
 
 import lombok.extern.log4j.Log4j2;
 
+import com.matheustorres.eadhub.authuser.documents.UserDocument;
+import com.matheustorres.eadhub.authuser.repositories.elasticsearch.UserElasticsearchRepository;
+
 @Log4j2
 @Service
 @RequiredArgsConstructor
@@ -46,6 +49,7 @@ public class UserServiceImpl implements UserService {
     private final UserEventPublisher userEventPublisher;
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
+    private final UserElasticsearchRepository userElasticsearchRepository;
 
     @Override
     public Page<User> findAll(Specification<User> spec, Pageable pageable) {
@@ -62,12 +66,26 @@ public class UserServiceImpl implements UserService {
     public void delete(User user) {
         log.info("UserServiceImpl::delete - Deletando usuário userId {}", user.getUserId());
         userRepository.delete(user);
+        userElasticsearchRepository.deleteById(user.getUserId().toString());
         userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.DELETE));
     }
 
     @Override
     public void save(User user) {
         userRepository.save(user);
+        userElasticsearchRepository.save(toDocument(user));
+    }
+
+    private UserDocument toDocument(User user) {
+        return UserDocument.builder()
+                .userId(user.getUserId().toString())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .userStatus(user.getUserStatus().name())
+                .userType(user.getUserType().name())
+                .cpf(user.getCpf())
+                .build();
     }
 
     @Override
@@ -80,6 +98,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByEmail(email);
     }
 
+    @Transactional
     @Override
     public User registerUser(UserDTO userDto) {
         log.info("UserServiceImpl::registerUser - Registrando usuário {}", userDto);
@@ -105,10 +124,12 @@ public class UserServiceImpl implements UserService {
         user.getRoles().add(role);
 
         user = userRepository.save(user);
+        userElasticsearchRepository.save(toDocument(user));
         userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.CREATE));
         return user;
     }
 
+    @Transactional
     @Override
     public User updateUser(UUID userId, UserDTO userDto) {
         log.info("UserServiceImpl::updateUser - Atualizando usuário userId {}", userId);
@@ -116,10 +137,12 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
         user.updateInfo(userDto.fullName(), userDto.phoneNumber(), userDto.cpf());
         user = userRepository.save(user);
+        userElasticsearchRepository.save(toDocument(user));
         userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.UPDATE));
         return user;
     }
 
+    @Transactional
     @Override
     public void updatePassword(UUID userId, UserDTO userDto) {
         log.info("UserServiceImpl::updatePassword - Atualizando senha userId {}", userId);
@@ -133,6 +156,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     @Override
     public User updateImage(UUID userId, UserDTO userDto) {
         log.info("UserServiceImpl::updateImage - Atualizando imagem userId {}", userId);
@@ -140,6 +164,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
         user.updateImage(userDto.imageUrl());
         user = userRepository.save(user);
+        userElasticsearchRepository.save(toDocument(user));
         userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.UPDATE));
         return user;
     }
@@ -154,6 +179,7 @@ public class UserServiceImpl implements UserService {
         user.getRoles().add(role);
         user.updateInstructor();
         user = userRepository.save(user);
+        userElasticsearchRepository.save(toDocument(user));
         userEventPublisher.publishUserEvent(userMapper.toEventDTO(user, ActionType.UPDATE));
         return user;
     }
@@ -167,5 +193,10 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUserId(UUID userId) throws UsernameNotFoundException {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with userId: " + userId));
+    }
+
+    @Override
+    public Page<UserDocument> searchUser(String query, Pageable pageable) {
+        return userElasticsearchRepository.findByUsernameContainingOrFullNameContaining(query, query, pageable);
     }
 }

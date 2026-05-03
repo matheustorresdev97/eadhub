@@ -24,14 +24,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.matheustorres.eadhub.course.domain.enums.UserStatus;
 import com.matheustorres.eadhub.course.domain.models.Course;
-import com.matheustorres.eadhub.course.domain.models.User;
 import com.matheustorres.eadhub.course.dtos.CourseDTO;
 import com.matheustorres.eadhub.course.services.CourseService;
 import com.matheustorres.eadhub.course.services.UserService;
 import com.matheustorres.eadhub.course.specifications.CourseSpec;
 import com.matheustorres.eadhub.course.validation.CourseValidator;
+import com.matheustorres.eadhub.course.documents.CourseDocument;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -101,6 +100,13 @@ public class CourseController {
             }
         }
         return ResponseEntity.status(HttpStatus.OK).body(coursePage);
+    }
+
+    @PreAuthorize("hasAnyRole('STUDENT')")
+    @GetMapping("/search")
+    public ResponseEntity<Page<CourseDocument>> searchCourses(@RequestParam String q,
+                                                            @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(courseService.searchCourse(q, pageable));
     }
 
     @PreAuthorize("hasAnyRole('STUDENT')")

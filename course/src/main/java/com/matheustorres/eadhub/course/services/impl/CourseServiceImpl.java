@@ -27,6 +27,9 @@ import com.matheustorres.eadhub.course.repositories.LessonRepository;
 import com.matheustorres.eadhub.course.repositories.ModuleRepository;
 import com.matheustorres.eadhub.course.services.CourseService;
 
+import com.matheustorres.eadhub.course.documents.CourseDocument;
+import com.matheustorres.eadhub.course.repositories.elasticsearch.CourseElasticsearchRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +44,7 @@ public class CourseServiceImpl implements CourseService {
     private final CourseMapper courseMapper;
     private final NotificationMapper notificationMapper;
     private final NotificationCommandPublisher notificationCommandPublisher;
+    private final CourseElasticsearchRepository courseElasticsearchRepository;
 
     @Override
     public boolean existsByCourseId(UUID courseId) {
@@ -62,6 +66,7 @@ public class CourseServiceImpl implements CourseService {
         }
         courseRepository.deleteCourseUserByCourse(course.getCourseId());
         courseRepository.delete(course);
+        courseElasticsearchRepository.deleteById(course.getCourseId().toString());
     }
 
     @Override
@@ -79,7 +84,9 @@ public class CourseServiceImpl implements CourseService {
         Course course = courseMapper.toEntityBuilder(courseDto);
         course.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
         course.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
-        return courseRepository.save(course);
+        course = courseRepository.save(course);
+        courseElasticsearchRepository.save(toDocument(course));
+        return course;
     }
 
     @Override
@@ -88,7 +95,20 @@ public class CourseServiceImpl implements CourseService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found."));
         course.updateCourse(courseDto.name(), courseDto.description(), courseDto.imageUrl(), courseDto.courseStatus(),
                 courseDto.courseLevel());
-        return courseRepository.save(course);
+        course = courseRepository.save(course);
+        courseElasticsearchRepository.save(toDocument(course));
+        return course;
+    }
+
+    private CourseDocument toDocument(Course course) {
+        return CourseDocument.builder()
+                .courseId(course.getCourseId().toString())
+                .name(course.getName())
+                .description(course.getDescription())
+                .courseStatus(course.getCourseStatus().name())
+                .courseLevel(course.getCourseLevel().name())
+                .userInstructor(course.getUserInstructor().toString())
+                .build();
     }
 
     @Override
@@ -112,6 +132,11 @@ public class CourseServiceImpl implements CourseService {
         } catch (Exception e){
             log.warn("Error sending notification!");
         }
+    }
+
+    @Override
+    public Page<CourseDocument> searchCourse(String query, Pageable pageable) {
+        return courseElasticsearchRepository.findByNameContainingOrDescriptionContaining(query, query, pageable);
     }
 
 }   
