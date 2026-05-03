@@ -1,35 +1,56 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { User } from '../models/user.model';
+import { JwtResponse, LoginRequest, SignupRequest } from '../models/auth.model';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly baseUrl = 'http://localhost:8080/auth';
   
-  // Signals for state management
-  currentUser = signal<User | null>(null);
-  isAuthenticated = signal<boolean>(false);
+  isAuthenticated = signal<boolean>(this.checkAuthStatus());
 
-  constructor(private http: HttpClient) {}
+  private checkAuthStatus(): boolean {
+    if (isPlatformBrowser(this.platformId)) {
+      return !!localStorage.getItem('token');
+    }
+    return false;
+  }
 
-  login(loginData: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/login`, loginData).pipe(
+  login(loginData: LoginRequest): Observable<JwtResponse> {
+    return this.http.post<JwtResponse>(`${this.baseUrl}/login`, loginData).pipe(
       tap(response => {
-        if (response.token) {
+        if (response.token && isPlatformBrowser(this.platformId)) {
           localStorage.setItem('token', response.token);
           this.isAuthenticated.set(true);
-          // In a real app, we'd decode the JWT or fetch the user info
         }
       })
     );
   }
 
+  signup(signupData: SignupRequest): Observable<User> {
+    return this.http.post<User>(`${this.baseUrl}/signup`, signupData);
+  }
+
   logout(): void {
-    localStorage.removeItem('token');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('token');
+    }
     this.isAuthenticated.set(false);
-    this.currentUser.set(null);
+    this.router.navigate(['/login']);
+  }
+
+  getToken(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('token');
+    }
+    return null;
   }
 }
